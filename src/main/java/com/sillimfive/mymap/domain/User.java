@@ -12,5 +12,18 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
+    private String email;
+    private String loginId;
+
+    public User(){
+
+    }
+
+    public User(Long id,String email,String loginId){
+        this.id = id;
+        this.email = email;
+        this.loginId = loginId;
+    }
+
 
 }
