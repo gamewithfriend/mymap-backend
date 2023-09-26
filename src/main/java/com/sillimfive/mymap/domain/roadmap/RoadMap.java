@@ -4,14 +4,15 @@ import com.sillimfive.mymap.domain.BaseTimeEntity;
 import com.sillimfive.mymap.domain.Category;
 import com.sillimfive.mymap.domain.Image;
 import com.sillimfive.mymap.domain.User;
-import com.sillimfive.mymap.domain.tag.RoadMapTag;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.Assert;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Entity
@@ -25,10 +26,8 @@ public class RoadMap extends BaseTimeEntity {
 
     private boolean hiddenFlag;
 
-    private boolean deleteFlag;
-
     @OneToMany(mappedBy = "roadMap", cascade = CascadeType.ALL)
-    private List<RoadMapNode> nodes = new ArrayList<>();
+    private List<RoadMapNode> roadMapNodes = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -42,10 +41,8 @@ public class RoadMap extends BaseTimeEntity {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    private LocalDateTime lastModified;
-
     @OneToMany(mappedBy = "roadMap")
-    private List<RoadMapTag> tags = new ArrayList<>();
+    private List<RoadMapTag> roadMapTags = new ArrayList<>();
 
     private String title;
     private String description;
@@ -53,4 +50,40 @@ public class RoadMap extends BaseTimeEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "image_id")
     private Image image;
+
+    private boolean deleteFlag;
+
+    @Builder
+    protected RoadMap(boolean hiddenFlag, User creator, Category category, String title, String description, Image image) {
+        this.hiddenFlag = hiddenFlag;
+        this.user = creator;
+        this.creator = creator;
+        this.category = category;
+        this.title = title;
+        this.description = description;
+        this.image = image;
+    }
+
+    public static RoadMap createRoadMap(boolean hiddenFlag, User creator, Category category, String title, String description, Image image) {
+        Assert.hasText(title, "title must not be empty");
+
+        return RoadMap.builder()
+                .hiddenFlag(hiddenFlag)
+                .creator(creator)
+                .category(category)
+                .title(title)
+                .description(description)
+                .image(image)
+                .build();
+    }
+
+    public void addRoadMapNodes(List<RoadMapNode> nodes) {
+        this.roadMapNodes.addAll(nodes);
+        nodes.forEach(node -> node.setRoadMap(this));
+    }
+
+    public void addRoadMapTags(RoadMapTag... tags) {
+        this.roadMapTags.addAll(Arrays.asList(tags));
+        Arrays.stream(tags).forEach(tag -> tag.setRoadMap(this));
+    }
 }
