@@ -2,9 +2,13 @@ package com.sillimfive.mymap.domain.roadmap;
 
 import com.sillimfive.mymap.domain.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class RoadMapNode extends BaseTimeEntity {
 
@@ -28,4 +32,15 @@ public class RoadMapNode extends BaseTimeEntity {
 
     private boolean deleteFlag;
 
+    @Builder
+    public RoadMapNode(int nodeOrder, RoadMapNode parent, String content, String title) {
+        this.nodeOrder = nodeOrder;
+        this.parent = parent;
+        this.content = content;
+        this.title = title;
+    }
+
+    protected void setRoadMap(RoadMap roadMap) {
+        this.roadMap = roadMap;
+    }
 }
