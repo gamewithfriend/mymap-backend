@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -36,7 +37,10 @@ public class RoadMapService {
         Optional<Category> category = categoryRepository.findById(createDto.getCategoryId());
         Assert.isTrue(category.isPresent(), "Category should not be null");
 
-        List<Tag> tags = tagRepository.findByIdIn(createDto.getTagIds());
+        List<Tag> tags = new ArrayList<>();
+
+        if (Optional.ofNullable(createDto.getTagIds()).isPresent())
+            tags.addAll(tagRepository.findByIdIn(createDto.getTagIds()));
 
         if(createDto.getNewTags().size() != 0) {
             List<Tag> tagList = createDto.getNewTags().stream()
@@ -55,9 +59,12 @@ public class RoadMapService {
 
         RoadMap roadMap = createDto.convert(user, category.get(), image);
         roadMap.addRoadMapNodes(createDto.getRoadMapNodesFromDto());
+        roadMap.addRoadMapTags(roadMapTags);
 
         roadMapRepository.save(roadMap);
 
         return roadMap.getId();
     }
+
+
 }
