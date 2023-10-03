@@ -5,12 +5,18 @@ import com.sillimfive.mymap.domain.ImageType;
 import com.sillimfive.mymap.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -32,6 +38,8 @@ public class ImageService {
         String fullName = dirPath + File.separator + getFileName(userId);
         multipartFile.transferTo(new File(fullName));
 
+        fullName = URLEncoder.encode(fullName, StandardCharsets.UTF_8);
+
         return imageRepository.save(new Image(fullName, type.toString())).getId();
     }
 
@@ -45,5 +53,17 @@ public class ImageService {
         return new StringBuffer()
                 .append(LocalDateTime.now().format(pattern))
                 .append(userId).toString();
+    }
+
+    public Resource load(String path) throws MalformedURLException {
+        path = URLDecoder.decode(path, StandardCharsets.UTF_8);
+
+        log.debug("resource load path: {}", path);
+        Resource resource = new UrlResource(new File(path).toURI());
+
+        if (resource.exists() || resource.isReadable()) return resource;
+        else
+            throw new IllegalArgumentException("The file(" + path + ") doesn't exist or the path is not readable.");
+
     }
 }

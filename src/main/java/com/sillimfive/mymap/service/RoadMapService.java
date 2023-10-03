@@ -7,7 +7,8 @@ import com.sillimfive.mymap.domain.roadmap.RoadMap;
 import com.sillimfive.mymap.domain.roadmap.RoadMapTag;
 import com.sillimfive.mymap.domain.tag.Tag;
 import com.sillimfive.mymap.repository.*;
-import com.sillimfive.mymap.service.dto.RoadMapCreateDto;
+import com.sillimfive.mymap.web.dto.RoadMapCreateDto;
+import com.sillimfive.mymap.web.dto.RoadMapResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class RoadMapService {
     private final ImageRepository imageRepository;
     private final UserRepository userRepository;
 
-    public Long create(Long userId, RoadMapCreateDto createDto) {
+    public Long create(Long userId, Long imageId, RoadMapCreateDto createDto) {
 
         // find category, tag information
         Optional<Category> category = categoryRepository.findById(createDto.getCategoryId());
@@ -43,9 +44,8 @@ public class RoadMapService {
             tags.addAll(tagRepository.findByIdIn(createDto.getTagIds()));
 
         if(createDto.getNewTags().size() != 0) {
-            List<Tag> tagList = createDto.getNewTags().stream()
-                                            .map(Tag::new)
-                                            .collect(Collectors.toList());
+            List<Tag> tagList = createDto
+                    .getNewTags().stream().map(Tag::new).collect(Collectors.toList());
 
             tags.addAll(tagList);
         }
@@ -54,7 +54,7 @@ public class RoadMapService {
         List<RoadMapTag> roadMapTags = RoadMapTag.createRoadMapTags(tags);
 
         // create RoadMapNode, RoadMap
-        Image image = imageRepository.findById(createDto.getImageId()).get();
+        Image image = imageRepository.findById(imageId).get();
         User user = userRepository.findOne(userId);
 
         RoadMap roadMap = createDto.convert(user, category.get(), image);
@@ -66,5 +66,11 @@ public class RoadMapService {
         return roadMap.getId();
     }
 
+    public RoadMapResponseDto findById(Long id) {
+        RoadMap roadMap = roadMapRepository.findById(id).orElseThrow(()
+                -> new IllegalArgumentException("There is no roadMap"));
+
+        return null;
+    }
 
 }

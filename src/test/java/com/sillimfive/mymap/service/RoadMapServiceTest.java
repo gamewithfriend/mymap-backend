@@ -8,8 +8,8 @@ import com.sillimfive.mymap.repository.CategoryRepository;
 import com.sillimfive.mymap.repository.ImageRepository;
 import com.sillimfive.mymap.repository.RoadMapRepository;
 import com.sillimfive.mymap.repository.UserRepository;
-import com.sillimfive.mymap.service.dto.RoadMapCreateDto;
-import com.sillimfive.mymap.service.dto.RoadMapNodeCreateDto;
+import com.sillimfive.mymap.web.dto.RoadMapCreateDto;
+import com.sillimfive.mymap.web.dto.RoadMapNodeCreateDto;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -80,11 +80,10 @@ class RoadMapServiceTest {
         );
         createDto.setNodeDtoList(roadMapNodeDtoList);
         createDto.setCategoryId(categoryId);
-        createDto.setImageId(imageId);
         createDto.setNewTags(newTags);
 
         //when
-        Long roadMapId = roadMapService.create(userId, createDto);
+        Long roadMapId = roadMapService.create(userId, imageId, createDto);
         Optional<RoadMap> findOne = roadMapRepository.findById(roadMapId);
 
         //then
