@@ -1,4 +1,4 @@
-package com.sillimfive.mymap.service.dto;
+package com.sillimfive.mymap.web.dto;
 
 import com.sillimfive.mymap.domain.Category;
 import com.sillimfive.mymap.domain.Image;
@@ -24,7 +24,6 @@ public class RoadMapCreateDto {
     private List<RoadMapNodeCreateDto> nodeDtoList;
 
     private Long categoryId;
-    private Long imageId;
     private List<Long> tagIds;
     private List<String> newTags;
 
