@@ -51,16 +51,16 @@ public class RoadMapCreateDto {
 
             RoadMapNode node = RoadMapNode.builder()
                     .nodeOrder(nodeDto.getIndex())
-                    .parent(nodeList.get(i - 1))
                     .title(nodeDto.getTitle())
                     .content(nodeDto.getContent())
                     .build();
+
+            if (nodeDto.getParentIndex().equals(nodeList.get(i-1).getNodeOrder()))
+                node.setParentNode(nodeList.get(i-1));
 
             nodeList.add(node);
         }
 
         return nodeList;
     }
-
-
 }

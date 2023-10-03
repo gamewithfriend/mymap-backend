@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Entity
@@ -41,7 +40,7 @@ public class RoadMap extends BaseTimeEntity {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @OneToMany(mappedBy = "roadMap")
+    @OneToMany(mappedBy = "roadMap", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<RoadMapTag> roadMapTags = new ArrayList<>();
 
     private String title;
@@ -82,8 +81,8 @@ public class RoadMap extends BaseTimeEntity {
         nodes.forEach(node -> node.setRoadMap(this));
     }
 
-    public void addRoadMapTags(RoadMapTag... tags) {
-        this.roadMapTags.addAll(Arrays.asList(tags));
-        Arrays.stream(tags).forEach(tag -> tag.setRoadMap(this));
+    public void addRoadMapTags(List<RoadMapTag> tags) {
+        this.roadMapTags.addAll(tags);
+        tags.forEach(tag -> tag.setRoadMap(this));
     }
 }

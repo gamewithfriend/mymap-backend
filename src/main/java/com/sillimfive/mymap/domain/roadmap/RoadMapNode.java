@@ -43,4 +43,8 @@ public class RoadMapNode extends BaseTimeEntity {
     protected void setRoadMap(RoadMap roadMap) {
         this.roadMap = roadMap;
     }
+
+    public void setParentNode(RoadMapNode parent) {
+        this.parent = parent;
+    }
 }
