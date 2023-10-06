@@ -53,7 +53,10 @@ dependencies {
 	//OAuth2 를 사용하기 위한 스타터 추가
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	//--------
-
+	//-- 롬복 테스트 사용 추가
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
+	//------
 }
 
 tasks.named('test') {
