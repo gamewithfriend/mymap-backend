@@ -1,22 +1,18 @@
 package com.sillimfive.mymap.config;
 
-import lombok.RequiredArgsConstructor;
 import com.sillimfive.mymap.config.jwt.TokenProvider;
 import com.sillimfive.mymap.config.oauth.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.sillimfive.mymap.config.oauth.OAuth2SuccessHandler;
 import com.sillimfive.mymap.config.oauth.OAuth2UserCustomService;
 import com.sillimfive.mymap.repository.RefreshTokenRepository;
 import com.sillimfive.mymap.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
-import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
-import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -26,6 +22,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 
 @RequiredArgsConstructor
+@EnableWebSecurity
 @Configuration
 public class WebOAuthSecurityConfig {
 
@@ -57,12 +54,14 @@ public class WebOAuthSecurityConfig {
         http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         http.authorizeHttpRequests((authorize) -> authorize
+                .requestMatchers("/oauth/login/**").permitAll()
                 .requestMatchers("/api/token").permitAll()
                 .requestMatchers("/api/**").authenticated()
                 .anyRequest().permitAll());
 
         http.oauth2Login((oauth2Login) ->
-                oauth2Login.loginPage("/login")
+                oauth2Login
+//                        .loginPage("/login")
                         .authorizationEndpoint(authorizationEndpoint -> authorizationEndpoint.authorizationRequestRepository(oAuth2AuthorizationRequestBasedOnCookieRepository()))
                         .successHandler(oAuth2SuccessHandler())
                         .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(oAuth2UserCustomService))
