@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ public class RoadMap extends BaseTimeEntity {
     private Category category;
 
     @OneToMany(mappedBy = "roadMap", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @BatchSize(size = 100)
     private List<RoadMapTag> roadMapTags = new ArrayList<>();
 
     private String title;
@@ -63,11 +65,10 @@ public class RoadMap extends BaseTimeEntity {
         this.image = image;
     }
 
-    public static RoadMap createRoadMap(boolean hiddenFlag, User creator, Category category, String title, String description, Image image) {
+    public static RoadMap createRoadMap(User creator, Category category, String title, String description, Image image) {
         Assert.hasText(title, "title must not be empty");
 
         return RoadMap.builder()
-                .hiddenFlag(hiddenFlag)
                 .creator(creator)
                 .category(category)
                 .title(title)

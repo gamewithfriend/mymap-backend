@@ -21,4 +21,8 @@ public class Image {
         this.path = path;
         this.imageType = imageType;
     }
+
+    public void changePath(String newPath) {
+        path = newPath;
+    }
 }

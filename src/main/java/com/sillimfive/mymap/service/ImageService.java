@@ -3,6 +3,7 @@ package com.sillimfive.mymap.service;
 import com.sillimfive.mymap.domain.Image;
 import com.sillimfive.mymap.domain.ImageType;
 import com.sillimfive.mymap.repository.ImageRepository;
+import io.jsonwebtoken.lang.Assert;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -19,6 +20,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,17 +32,42 @@ public class ImageService {
 
     @Transactional
     public Long save(MultipartFile multipartFile, Long userId, ImageType type) throws IOException {
-
-        // todo: code 테이블을 통해 DB에서 저장경로를 가져오는 기능 구현예정.
-        String dirPath = "D:\\path\\" + File.separator + type.toString();
-        if (!isValidPath(dirPath)) new File(dirPath).mkdirs();
-
-        String fullName = dirPath + File.separator + getFileName(userId);
+        String fullName = getFullName(userId, type);
         multipartFile.transferTo(new File(fullName));
 
-        fullName = URLEncoder.encode(fullName, StandardCharsets.UTF_8);
-
         return imageRepository.save(new Image(fullName, type.toString())).getId();
+    }
+
+    /**
+     * @param userId
+     * @param type
+     * @return full name with dir path
+     */
+    private String getFullName(Long userId, ImageType type){
+        // todo: code 테이블을 통해 DB에서 저장경로를 가져오는 기능 구현예정.
+        String dirPath = "D:\\path\\" + File.separator + type.toString();
+
+        if (!isValidPath(dirPath)) new File(dirPath).mkdirs();
+        String fullName = dirPath + File.separator + getFileName(userId);
+
+        return URLEncoder.encode(fullName, StandardCharsets.UTF_8);
+    }
+
+    @Transactional
+    public Boolean swapImage(Long imageId, Long userId, MultipartFile multipartFile) throws IOException {
+        Image image = imageRepository.findById(imageId).orElseThrow(()
+                -> new IllegalArgumentException("There is no image for " + imageId));
+
+        File file = new File(image.getPath());
+        Assert.isTrue(file.exists(), "Can't find image file in file system");
+
+        file.delete();
+
+        String fullName = getFullName(userId, ImageType.valueOf(image.getImageType()));
+        multipartFile.transferTo(new File(fullName));
+        image.changePath(fullName);
+
+        return true;
     }
 
     private boolean isValidPath(String dirPath) {
@@ -64,6 +91,5 @@ public class ImageService {
         if (resource.exists() || resource.isReadable()) return resource;
         else
             throw new IllegalArgumentException("The file(" + path + ") doesn't exist or the path is not readable.");
-
     }
 }
