@@ -45,7 +45,8 @@ public class ImageService {
      */
     private String getFullName(Long userId, ImageType type){
         // todo: code 테이블을 통해 DB에서 저장경로를 가져오는 기능 구현예정.
-        String dirPath = "D:\\path\\" + File.separator + type.toString();
+//        String dirPath = "D:\\path\\" + File.separator + type.toString();
+        String dirPath = "/home/mymap" + File.separator + type.toString();
 
         if (!isValidPath(dirPath)) new File(dirPath).mkdirs();
         String fullName = dirPath + File.separator + getFileName(userId);

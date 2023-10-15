@@ -64,7 +64,7 @@ class RoadMapServiceTest {
                 .nickName("mun1103")
                 .build();
         userRepository.save(user);
-        categoryRepository.save(new Category("JPA"));
+        categoryRepository.save(new Category("백엔드"));
         imageRepository.save(new Image("/home/ubuntu/temp", "roadMap"));
 
         em.flush();

@@ -1,11 +1,8 @@
 package com.sillimfive.mymap.web;
 
-import com.sillimfive.mymap.config.jwt.TokenProvider;
 import com.sillimfive.mymap.service.TokenService;
-import com.sillimfive.mymap.web.dto.CreateAccessTokenRequest;
-import com.sillimfive.mymap.web.dto.CreateAccessTokenResponse;
 import com.sillimfive.mymap.web.dto.Error;
-import com.sillimfive.mymap.web.dto.ResultSet;
+import com.sillimfive.mymap.web.dto.*;
 import com.sillimfive.mymap.web.dto.user.UserDto;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
@@ -19,11 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -43,7 +36,7 @@ public class TokenApiController {
     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
     private String redirectUri;
 
-
+    @Operation(summary = "액세스 토큰 갱신", description = "Refresh access token (desc)")
     @PostMapping("/renew")
     public ResultSet createNewAccessToken(
             @RequestBody CreateAccessTokenRequest request
@@ -61,8 +54,14 @@ public class TokenApiController {
                 .build();
     }
 
+    @Operation(summary = "토큰 발급받기",
+                description = "<b>Receives tokens (accessToken, refreshToken) and userInfo</b><br>" +
+                            "OAuth 인증을 통해 Authorization Server에서 받은 access 토큰과 토큰의 유형(구글/카카오)을 전달하여" +
+                            "현 Application의 인증에 필요한 토큰 발급" +
+                        "<br><br>" +
+                        "todo: 관련 로직 미구현(spec만 명시)에 따라 로직 구현 필요")
     @PostMapping
-    public JSONObject oauth(String accessToken, String tokenType) throws IOException {
+    public JSONObject authenticationToken(@RequestBody AuthRequestDto tokenInfo) throws IOException {
         JSONObject json = new JSONObject();
 
         String email = "mun1103.dev@gmail.com";
@@ -76,7 +75,7 @@ public class TokenApiController {
         Duration access = Duration.ofDays(1);
         Duration refresh = Duration.ofDays(14);
 
-        String accessTkn = Jwts.builder()
+        String accessToken = Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + access.toMillis()))
@@ -96,7 +95,7 @@ public class TokenApiController {
         userDto.setNickname("sample");
         userDto.setEmail(email);
 
-        json.put("accessToken", accessTkn);
+        json.put("accessToken", accessToken);
         json.put("refreshToken", refreshToken);
         json.put("user", userDto);
 

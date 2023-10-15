@@ -22,14 +22,19 @@ import java.util.List;
 @ToString
 public class RoadMapCreateDto {
     @NotBlank(message = "title can't be blank")
+    @Schema(example = "JPA 학습 로드맵")
     private String title;
+    @Schema(example = "Back-end DB access skill")
     private String description;
 
     private List<RoadMapNodeCreateDto> nodeDtoList;
 
-    @NotNull
+    @NotNull @Min(value = 1)
+    @Schema(example = "1")
     private Long categoryId;
+
     private List<@Min(value = 1) Long> tagIds;
+    @Schema(example = "jpa")
     private List<@NotBlank String> newTags;
 
     @Schema(hidden = true)

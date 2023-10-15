@@ -7,16 +7,23 @@ import com.sillimfive.mymap.service.RoadMapService;
 import com.sillimfive.mymap.web.dto.CategoryDto;
 import com.sillimfive.mymap.web.dto.roadmap.*;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.print.Pageable;
 import java.io.IOException;
 import java.util.List;
 
@@ -33,6 +40,13 @@ public class RoadMapController {
     private final RoadMapService roadMapService;
 
     @Operation(summary = "로드맵 생성", description = "Create a roadmap (desc)")
+    @ApiResponses(value =
+        @ApiResponse(
+            responseCode = "201", description = "Created", content =
+            @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema =
+            @Schema(example = "1", description = "생성된 로드맵 아이디 반환"))
+        )
+    )
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public Long create(@RequestBody RoadMapCreateDto roadMapCreateDto, MultipartFile multipartFile, Authentication authentication) throws IOException {
@@ -61,8 +75,9 @@ public class RoadMapController {
     }
 
     @Operation(summary = "로드맵 목록 조회", description = "Get roadmap list (desc)")
+    @Parameter(name = "pageable", hidden = true)
     @GetMapping
-    public List<RoadMapResponseDto> findAll(@RequestParam RoadMapSearch roadMapSearch) {
+    public List<RoadMapResponseDto> findAll(@RequestParam RoadMapSearch roadMapSearch, Pageable pageable) {
         return null;
     }
 
