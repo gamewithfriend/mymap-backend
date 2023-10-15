@@ -4,6 +4,7 @@ import com.sillimfive.mymap.domain.BaseTimeEntity;
 import com.sillimfive.mymap.domain.Category;
 import com.sillimfive.mymap.domain.Image;
 import com.sillimfive.mymap.domain.User;
+import com.sillimfive.mymap.web.dto.roadmap.RoadMapNodeUpdateDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -11,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.BatchSize;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,5 +87,35 @@ public class RoadMap extends BaseTimeEntity {
     public void addRoadMapTags(List<RoadMapTag> tags) {
         this.roadMapTags.addAll(tags);
         tags.forEach(tag -> tag.setRoadMap(this));
+    }
+
+    public void changeCategory(Category category) {
+        this.category = category;
+    }
+
+    public void changeContents(String title, String description) {
+        this.title = title;
+        this.description = description;
+    }
+
+    public void changeNodeTree(List<RoadMapNodeUpdateDto> nodeDtoList) {
+        for (RoadMapNode roadMapNode : roadMapNodes) {
+            for (RoadMapNodeUpdateDto nodeDto : nodeDtoList) {
+                if (roadMapNode.getId().equals(nodeDto.getId())) {
+                    roadMapNode.changeNodeDetail(nodeDto.getNodeTitle(), nodeDto.getNodeContent());
+                }
+            }
+        }
+    }
+
+    public void updateRoadMapTags(List<Long> roadMapTagIdList, List<RoadMapTag> newTags) {
+        List<RoadMapTag> removeList = new ArrayList<>();
+        for (RoadMapTag roadMapTag : roadMapTags) {
+            if (roadMapTagIdList.contains(roadMapTag.getId())) continue;
+
+            removeList.add(roadMapTag);
+        }
+        roadMapTags.remove(removeList);
+        roadMapTags.addAll(newTags);
     }
 }

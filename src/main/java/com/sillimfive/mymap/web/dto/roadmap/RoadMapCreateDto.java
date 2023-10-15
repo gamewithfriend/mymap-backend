@@ -6,6 +6,7 @@ import com.sillimfive.mymap.domain.User;
 import com.sillimfive.mymap.domain.roadmap.RoadMap;
 import com.sillimfive.mymap.domain.roadmap.RoadMapNode;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -28,8 +29,8 @@ public class RoadMapCreateDto {
 
     @NotNull
     private Long categoryId;
-    private List<Long> tagIds;
-    private List<String> newTags;
+    private List<@Min(value = 1) Long> tagIds;
+    private List<@NotBlank String> newTags;
 
     @Schema(hidden = true)
     public RoadMap convert(User user, Category category, Image image) {
@@ -45,8 +46,9 @@ public class RoadMapCreateDto {
 
         RoadMapNodeCreateDto rootDto = nodeDtoList.get(0);
         RoadMapNode root = RoadMapNode.builder()
-                .title(rootDto.getTitle())
-                .content(rootDto.getContent())
+                .nodeOrder(0)
+                .nodeTitle(rootDto.getNodeTitle())
+                .nodeContent(rootDto.getNodeContent())
                 .build();
         nodeList.add(root);
 
@@ -54,9 +56,10 @@ public class RoadMapCreateDto {
             RoadMapNodeCreateDto nodeDto = nodeDtoList.get(i);
 
             RoadMapNode node = RoadMapNode.builder()
-                    .title(nodeDto.getTitle())
+                    .nodeOrder(i)
                     .parent(nodeList.get(i-1))
-                    .content(nodeDto.getContent())
+                    .nodeTitle(nodeDto.getNodeTitle())
+                    .nodeContent(nodeDto.getNodeContent())
                     .build();
 
             nodeList.add(node);

@@ -15,7 +15,14 @@ public class RoadMapQuerydslRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public Optional<RoadMap> findByIdWithNodeFetch(Long id) {
+    /**
+     * fetch join for RoadMapNodeList
+     * Caution : no fetch join with tag list
+     *
+     * @param id - roadMapId
+     * @return
+     */
+    public Optional<RoadMap> findByIdWithNode(Long id) {
         RoadMap result = queryFactory
                 .selectFrom(roadMap)
                 .join(roadMap.roadMapNodes).fetchJoin()

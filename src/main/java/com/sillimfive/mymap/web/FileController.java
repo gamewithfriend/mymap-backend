@@ -1,6 +1,8 @@
 package com.sillimfive.mymap.web;
 
 import com.sillimfive.mymap.service.ImageService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -10,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.MalformedURLException;
 
+@Tag(name = "Images", description = "manage image files")
+@SecurityRequirement(name = "Bearer Authentication")
 @RestController
 @RequestMapping("/files")
 @RequiredArgsConstructor

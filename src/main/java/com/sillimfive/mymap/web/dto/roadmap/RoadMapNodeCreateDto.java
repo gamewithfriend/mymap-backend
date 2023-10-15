@@ -7,6 +7,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class RoadMapNodeCreateDto {
     private int order;
-    private String content;
-    private String title;
+    private String nodeContent;
+    private String nodeTitle;
 }

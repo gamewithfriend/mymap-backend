@@ -19,8 +19,8 @@ public class RoadMapNodeResponseDto {
         this.nodeId = node.getId();
         this.parentNodeId =
                 Optional.ofNullable(node.getParent()).isPresent() ? node.getParent().getId() : null;
-        this.content = node.getContent();
-        this.title = node.getTitle();
+        this.content = node.getNodeContent();
+        this.title = node.getNodeTitle();
         this.order = node.getNodeOrder();
     }
 }

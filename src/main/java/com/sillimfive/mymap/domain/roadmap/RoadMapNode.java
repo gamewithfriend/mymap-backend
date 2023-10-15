@@ -27,17 +27,17 @@ public class RoadMapNode extends BaseTimeEntity {
     private RoadMapNode parent;
 
     // todo : content length 조건을 어떻게 할지 확인 필요
-    private String content;
-    private String title;
+    private String nodeContent;
+    private String nodeTitle;
 
     private boolean deleteFlag;
 
     @Builder
-    public RoadMapNode(int nodeOrder, RoadMapNode parent, String content, String title) {
+    public RoadMapNode(int nodeOrder, RoadMapNode parent, String nodeContent, String nodeTitle) {
         this.nodeOrder = nodeOrder;
         this.parent = parent;
-        this.content = content;
-        this.title = title;
+        this.nodeContent = nodeContent;
+        this.nodeTitle = nodeTitle;
     }
 
     protected void setRoadMap(RoadMap roadMap) {
@@ -46,5 +46,10 @@ public class RoadMapNode extends BaseTimeEntity {
 
     public void setParentNode(RoadMapNode parent) {
         this.parent = parent;
+    }
+
+    protected void changeNodeDetail(String title, String content) {
+        this.nodeTitle = title;
+        this.nodeContent = content;
     }
 }
