@@ -8,9 +8,12 @@ import com.sillimfive.mymap.domain.roadmap.RoadMapTag;
 import com.sillimfive.mymap.domain.tag.Tag;
 import com.sillimfive.mymap.repository.*;
 import com.sillimfive.mymap.web.dto.roadmap.RoadMapCreateDto;
-import com.sillimfive.mymap.web.dto.roadmap.RoadMapResponseDto;
+import com.sillimfive.mymap.web.dto.roadmap.RoadMapDetailResponseDto;
+import com.sillimfive.mymap.web.dto.roadmap.RoadMapUpdateDto;
+import com.sillimfive.mymap.web.dto.tag.TagDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -70,18 +73,53 @@ public class RoadMapService {
         return roadMap.getId();
     }
 
-    public RoadMapResponseDto findById(Long id) {
-//        RoadMap roadMap = roadMapRepository.findById(id).orElseThrow(()
-        RoadMap roadMap = roadMapQuerydslRepository.findByIdWithNodeFetch(id).orElseThrow(()
+    @Transactional
+    public JSONObject edit(Long roadMapId, RoadMapUpdateDto updateDto) {
+        Optional<RoadMap> r1 = roadMapQuerydslRepository.findByIdWithNode(roadMapId);
+
+        if (r1.isEmpty())
+            throw new IllegalArgumentException("there is no roadMap");
+
+        RoadMap roadMap = r1.get();
+
+        Category foundCategory = categoryRepository.findById(updateDto.getCategoryId()).orElseThrow(()
+                -> new IllegalArgumentException("There is no category searched"));
+
+        if (!roadMap.getCategory().equals(foundCategory)) roadMap.changeCategory(foundCategory);
+
+        roadMap.changeContents(updateDto.getTitle(), updateDto.getDescription());
+        roadMap.changeNodeTree(updateDto.getNodeDtoList());
+
+        List<RoadMapTag> newRoadMapTags = new ArrayList<>();
+        if (updateDto.getNewTags() != null && updateDto.getNewTags().size() != 0) {
+            List<Tag> tagList = updateDto.getNewTags().stream()
+                    .map(Tag::new).collect(Collectors.toList());
+
+            newRoadMapTags.addAll(RoadMapTag.createRoadMapTags(tagList));
+        }
+        roadMap.updateRoadMapTags(updateDto.getRoadMapTagIds(), newRoadMapTags);
+
+        // todo: add to roadMapHistory
+
+        JSONObject json = new JSONObject();
+        json.put("result", true);
+
+        return json;
+    }
+
+    public RoadMapDetailResponseDto findById(Long id) {
+        RoadMap roadMap = roadMapQuerydslRepository.findByIdWithNode(id).orElseThrow(()
                 -> new IllegalArgumentException("There is no roadMap for " + id));
 
-        List<Tag> tags = roadMapTagRepository.findByRoadMapId(id).stream()
-                .map(roadMapTag -> roadMapTag.getTag())
+        List<TagDto> tags = roadMapTagRepository.findByRoadMapId(id).stream()
+                .map(roadMapTag -> new TagDto(roadMapTag.getTag()))
                 .collect(Collectors.toList());
 
-        RoadMapResponseDto response = new RoadMapResponseDto(roadMap);
+        RoadMapDetailResponseDto response = new RoadMapDetailResponseDto(roadMap);
         response.addTags(tags);
 
         return response;
     }
+
+
 }

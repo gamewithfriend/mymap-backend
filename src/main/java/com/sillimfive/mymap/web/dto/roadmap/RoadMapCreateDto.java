@@ -6,6 +6,7 @@ import com.sillimfive.mymap.domain.User;
 import com.sillimfive.mymap.domain.roadmap.RoadMap;
 import com.sillimfive.mymap.domain.roadmap.RoadMapNode;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -21,15 +22,20 @@ import java.util.List;
 @ToString
 public class RoadMapCreateDto {
     @NotBlank(message = "title can't be blank")
+    @Schema(example = "JPA 학습 로드맵")
     private String title;
+    @Schema(example = "Back-end DB access skill")
     private String description;
 
     private List<RoadMapNodeCreateDto> nodeDtoList;
 
-    @NotNull
+    @NotNull @Min(value = 1)
+    @Schema(example = "1")
     private Long categoryId;
-    private List<Long> tagIds;
-    private List<String> newTags;
+
+    private List<@Min(value = 1) Long> tagIds;
+    @Schema(example = "jpa")
+    private List<@NotBlank String> newTags;
 
     @Schema(hidden = true)
     public RoadMap convert(User user, Category category, Image image) {
@@ -45,8 +51,9 @@ public class RoadMapCreateDto {
 
         RoadMapNodeCreateDto rootDto = nodeDtoList.get(0);
         RoadMapNode root = RoadMapNode.builder()
-                .title(rootDto.getTitle())
-                .content(rootDto.getContent())
+                .nodeOrder(0)
+                .nodeTitle(rootDto.getNodeTitle())
+                .nodeContent(rootDto.getNodeContent())
                 .build();
         nodeList.add(root);
 
@@ -54,9 +61,10 @@ public class RoadMapCreateDto {
             RoadMapNodeCreateDto nodeDto = nodeDtoList.get(i);
 
             RoadMapNode node = RoadMapNode.builder()
-                    .title(nodeDto.getTitle())
+                    .nodeOrder(i)
                     .parent(nodeList.get(i-1))
-                    .content(nodeDto.getContent())
+                    .nodeTitle(nodeDto.getNodeTitle())
+                    .nodeContent(nodeDto.getNodeContent())
                     .build();
 
             nodeList.add(node);
