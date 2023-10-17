@@ -35,7 +35,7 @@ public class ImageService {
         String fullName = getFullName(userId, type);
         multipartFile.transferTo(new File(fullName));
 
-        return imageRepository.save(new Image(fullName, type.toString())).getId();
+        return imageRepository.save(new Image(URLEncoder.encode(fullName, StandardCharsets.UTF_8), type.toString())).getId();
     }
 
     /**
@@ -45,13 +45,18 @@ public class ImageService {
      */
     private String getFullName(Long userId, ImageType type){
         // todo: code 테이블을 통해 DB에서 저장경로를 가져오는 기능 구현예정.
-//        String dirPath = "D:\\path\\" + File.separator + type.toString();
-        String dirPath = "/home/mymap" + File.separator + type.toString();
+
+        String os = System.getProperty("os.name");
+        String dirPath;
+        if (os.equals("Linux")) dirPath = "/home/mymap";
+        else dirPath = "D:\\path\\";
+
+        dirPath += (File.separator + type.toString());
 
         if (!isValidPath(dirPath)) new File(dirPath).mkdirs();
         String fullName = dirPath + File.separator + getFileName(userId);
 
-        return URLEncoder.encode(fullName, StandardCharsets.UTF_8);
+        return fullName;
     }
 
     @Transactional

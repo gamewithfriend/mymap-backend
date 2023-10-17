@@ -26,10 +26,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,7 +34,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @Transactional
-@Rollback(value = false)
 @ActiveProfiles(value = {"maria", "oauth"})
 class RoadMapServiceTest {
 
@@ -60,7 +56,7 @@ class RoadMapServiceTest {
     @BeforeEach
     void init() {
         User user = User.builder()
-                .email("test@gmail.com")
+                .email(UUID.randomUUID() + "@gmail.com")
                 .nickName("mun1103")
                 .build();
         userRepository.save(user);
@@ -72,10 +68,11 @@ class RoadMapServiceTest {
     }
 
     @Test
+    @Rollback(value = false)
     @DisplayName("로드맵 생성")
     void create() {
         //given
-        Long userId = userRepository.findByEmail("test@gmail.com").get().getId();
+        Long userId = userRepository.findAll().stream().findAny().get().getId();
         Long categoryId = categoryRepository.findAll().get(0).getId();
         Long imageId = imageRepository.findAll().get(0).getId();
         List<String> newTags = Arrays.asList("association", "entity", "hierarchy");
@@ -151,10 +148,9 @@ class RoadMapServiceTest {
         em.flush();
         em.clear();
 
-        boolean result = Boolean.parseBoolean((String) jsonObject.get("result"));
+        boolean result = (boolean) jsonObject.get("result");
         RoadMap foundRoadMap = roadMapRepository.findById(roadMapId).get();
         //then
         assertTrue(result);
-
     }
 }
