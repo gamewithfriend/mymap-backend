@@ -45,6 +45,7 @@ spring:
 
 logging.level:
   org.hibernate.SQL: debug
+  com.sillimfive.mymap: info
 
 ---
 

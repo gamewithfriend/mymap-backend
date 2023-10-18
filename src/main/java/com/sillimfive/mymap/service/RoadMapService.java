@@ -7,13 +7,13 @@ import com.sillimfive.mymap.domain.roadmap.RoadMap;
 import com.sillimfive.mymap.domain.roadmap.RoadMapTag;
 import com.sillimfive.mymap.domain.tag.Tag;
 import com.sillimfive.mymap.repository.*;
-import com.sillimfive.mymap.web.dto.roadmap.RoadMapCreateDto;
-import com.sillimfive.mymap.web.dto.roadmap.RoadMapDetailResponseDto;
-import com.sillimfive.mymap.web.dto.roadmap.RoadMapUpdateDto;
+import com.sillimfive.mymap.web.dto.roadmap.*;
 import com.sillimfive.mymap.web.dto.tag.TagDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -121,5 +121,8 @@ public class RoadMapService {
         return response;
     }
 
+    public PageImpl<RoadMapResponseDto> findListBy(RoadMapSearch searchCondition, Pageable pageable) {
 
+        return roadMapQuerydslRepository.searchList(searchCondition, pageable);
+    }
 }

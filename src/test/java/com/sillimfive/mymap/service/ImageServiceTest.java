@@ -37,12 +37,12 @@ class ImageServiceTest {
     @DisplayName("이미지_파일_네이밍_확인_테스트")
     void naming() {
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-        String format = LocalDateTime.now().format(pattern);
-        System.out.println("format = " + format);
+        String datetime = LocalDateTime.now().format(pattern);
+        System.out.println("formattedDatetime = " + datetime);
 
-        StringBuffer sb = new StringBuffer(format);
-        StringBuffer buffer = sb.insert(0, "test_");
-        System.out.println("buffer = " + buffer);
+        StringBuffer sb = new StringBuffer(datetime);
+        sb.insert(0, "/home/mymap/{imageType}/");
+        System.out.println("imageFileName = " + sb);
     }
 
     @Test
@@ -50,8 +50,8 @@ class ImageServiceTest {
     @Rollback(value = false)
     void upload() throws IOException {
         //given
-        MultipartFile mockMultipartFile = new MockMultipartFile("test", "imagefile content".getBytes());
-        Long userId = 1l;
+        MultipartFile mockMultipartFile = new MockMultipartFile("test", "imageFile content".getBytes());
+        Long userId = 1L;
         ImageType imageType = ImageType.ROADMAP;
 
         //when
@@ -61,6 +61,7 @@ class ImageServiceTest {
 
         //then
         assertThat(findOne.getImageType()).isEqualTo(imageType.toString());
+        System.out.println("imagePath = " + image.getAbsolutePath());
         assertTrue(image.exists());
     }
 }
