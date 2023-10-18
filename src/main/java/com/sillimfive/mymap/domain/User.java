@@ -30,7 +30,8 @@ public class User extends BaseTimeEntity implements UserDetails {
     private LocalDateTime lastLogin;
 
     @Builder
-    public User(String email, String loginId, String nickName, String userState, LocalDateTime lastLogin) {
+    public User(Long id, String email, String loginId, String nickName, String userState, LocalDateTime lastLogin) {
+        this.id = id;
         this.email = email;
         this.loginId = loginId;
         this.nickName = nickName;

@@ -58,15 +58,15 @@ public class WebOAuthSecurityConfig {
                 .requestMatchers("/api/**").authenticated()
                 .anyRequest().permitAll());
 
-        http.oauth2Login((oauth2Login) ->
-                oauth2Login
-//                        .loginPage("/login")
-                        .authorizationEndpoint(authorizationEndpoint -> authorizationEndpoint.authorizationRequestRepository(oAuth2AuthorizationRequestBasedOnCookieRepository()))
-                        .successHandler(oAuth2SuccessHandler())
-                        .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(oAuth2UserCustomService))
-        );
-
-        http.logout(logout -> logout.logoutSuccessUrl("/login"));
+//        http.oauth2Login((oauth2Login) ->
+//                oauth2Login
+////                        .loginPage("/login")
+//                        .authorizationEndpoint(authorizationEndpoint -> authorizationEndpoint.authorizationRequestRepository(oAuth2AuthorizationRequestBasedOnCookieRepository()))
+//                        .successHandler(oAuth2SuccessHandler())
+//                        .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(oAuth2UserCustomService))
+//        );
+//
+//        http.logout(logout -> logout.logoutSuccessUrl("/login"));
 
         http.exceptionHandling(e -> e.defaultAuthenticationEntryPointFor(
                 new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),

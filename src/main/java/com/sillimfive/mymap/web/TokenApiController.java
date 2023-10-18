@@ -3,6 +3,10 @@ package com.sillimfive.mymap.web;
 import com.sillimfive.mymap.service.TokenService;
 import com.sillimfive.mymap.web.dto.Error;
 import com.sillimfive.mymap.web.dto.*;
+import com.sillimfive.mymap.web.dto.token.AuthenticationTokenRequest;
+import com.sillimfive.mymap.web.dto.token.AuthenticationTokenResponse;
+import com.sillimfive.mymap.web.dto.token.CreateAccessTokenRequest;
+import com.sillimfive.mymap.web.dto.token.CreateAccessTokenResponse;
 import com.sillimfive.mymap.web.dto.user.UserDto;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
@@ -14,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -35,6 +40,15 @@ public class TokenApiController {
     private String clientId;
     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
     private String redirectUri;
+
+    @PostMapping
+    public ResponseEntity<AuthenticationTokenResponse> OauthAuthenticateToken(@RequestBody AuthenticationTokenRequest tokenRequest){
+
+        AuthenticationTokenResponse authTokenResponse =
+                tokenService.getAuthTokenResponse(tokenRequest.getAccessToken(), tokenRequest.getTokenType());
+
+        return ResponseEntity.ok(authTokenResponse);
+    }
 
     @Operation(summary = "액세스 토큰 갱신", description = "Refresh access token (desc)")
     @PostMapping("/renew")
@@ -60,7 +74,7 @@ public class TokenApiController {
                             "현 Application의 인증에 필요한 토큰 발급" +
                         "<br><br>" +
                         "todo: 관련 로직 미구현(spec만 명시)에 따라 로직 구현 필요")
-    @PostMapping
+//    @PostMapping
     public JSONObject authenticationToken(@RequestBody AuthRequestDto tokenInfo) throws IOException {
         JSONObject json = new JSONObject();
 

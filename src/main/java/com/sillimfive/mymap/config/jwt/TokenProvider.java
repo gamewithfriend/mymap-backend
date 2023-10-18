@@ -37,7 +37,7 @@ public class TokenProvider {
                 .setExpiration(expiry)
                 .setSubject(user.getEmail())
                 .claim("id", user.getId())
-                .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
+                .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey()) //todo secretkey 해싱처리
                 .compact();
     }
 
@@ -56,13 +56,12 @@ public class TokenProvider {
         Claims claims = getClaims(token);
         Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
 
-        return new UsernamePasswordAuthenticationToken(
-                new org.springframework.security.core.userdetails.User(
-                        claims.getSubject(),
-                        "",
-                        authorities
-                ), token, authorities
-        );
+        User user = User.builder()
+                .email(claims.getSubject())
+                .id(claims.get("id",Long.class))
+                .build();
+        return new UsernamePasswordAuthenticationToken(user, token, authorities);
+
     }
 
     public Long getUserId(String token){

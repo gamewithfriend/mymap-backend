@@ -1,4 +1,4 @@
-package com.sillimfive.mymap.web.dto;
+package com.sillimfive.mymap.web.dto.token;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
