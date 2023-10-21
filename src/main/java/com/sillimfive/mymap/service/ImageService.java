@@ -38,6 +38,11 @@ public class ImageService {
         return imageRepository.save(new Image(URLEncoder.encode(fullName, StandardCharsets.UTF_8), type.toString())).getId();
     }
 
+    @Transactional
+    public void remove(Long imageId) {
+        imageRepository.deleteById(imageId);
+    }
+
     /**
      * @param userId
      * @param type
@@ -66,7 +71,6 @@ public class ImageService {
 
         File file = new File(image.getPath());
         Assert.isTrue(file.exists(), "Can't find image file in file system");
-
         file.delete();
 
         String fullName = getFullName(userId, ImageType.valueOf(image.getImageType()));
