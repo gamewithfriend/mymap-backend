@@ -12,8 +12,8 @@ import com.sillimfive.mymap.repository.RoadMapRepository;
 import com.sillimfive.mymap.repository.UserRepository;
 import com.sillimfive.mymap.web.dto.roadmap.RoadMapCreateDto;
 import com.sillimfive.mymap.web.dto.roadmap.RoadMapNodeCreateDto;
-import com.sillimfive.mymap.web.dto.roadmap.RoadMapNodeUpdateDto;
-import com.sillimfive.mymap.web.dto.roadmap.RoadMapUpdateDto;
+import com.sillimfive.mymap.web.dto.roadmap.RoadMapNodeEditDto;
+import com.sillimfive.mymap.web.dto.roadmap.RoadMapEditDto;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.json.simple.JSONObject;
@@ -116,10 +116,10 @@ class RoadMapServiceTest {
 
         roadMapTagIdList.remove(0);
 
-        List<RoadMapNodeUpdateDto> nodeUpdateDtoList = new ArrayList<>();
+        List<RoadMapNodeEditDto> nodeUpdateDtoList = new ArrayList<>();
         int index = 0;
         for (RoadMapNode roadMapNode : givenRoadMap.getRoadMapNodes()) {
-            RoadMapNodeUpdateDto updateDto = new RoadMapNodeUpdateDto();
+            RoadMapNodeEditDto updateDto = new RoadMapNodeEditDto();
             updateDto.setId(roadMapNode.getId());
             if (index > 1) {
                 updateDto.setNodeTitle(roadMapNode.getNodeTitle() + " changed");
@@ -135,7 +135,7 @@ class RoadMapServiceTest {
             index++;
         }
 
-        RoadMapUpdateDto updateDto = new RoadMapUpdateDto();
+        RoadMapEditDto updateDto = new RoadMapEditDto();
         updateDto.setCategoryId(categoryId);
         updateDto.setTitle("changed Title");
         updateDto.setDescription("changed RoadMap");
