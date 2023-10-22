@@ -87,6 +87,7 @@ public class TokenApiController {
                 .append("&redirect_uri=").append(URLEncoder.encode(googleRedirectUri, StandardCharsets.UTF_8))
                 .append("&client_id=").append(googleClientId).toString();
         return url;
+
     }
 
 }
