@@ -74,9 +74,8 @@ public class RoadMapService {
     }
 
     @Transactional
-    public JSONObject edit(Long roadMapId, RoadMapUpdateDto updateDto) {
+    public JSONObject edit(Long roadMapId, RoadMapEditDto updateDto) {
         Optional<RoadMap> r1 = roadMapQuerydslRepository.findByIdWithNode(roadMapId);
-
         if (r1.isEmpty())
             throw new IllegalArgumentException("there is no roadMap");
 
@@ -87,11 +86,13 @@ public class RoadMapService {
 
         if (!roadMap.getCategory().equals(foundCategory)) roadMap.changeCategory(foundCategory);
 
-        roadMap.changeContents(updateDto.getTitle(), updateDto.getDescription());
-        roadMap.changeNodeTree(updateDto.getNodeDtoList());
+//        boolean contentsChanged = roadMap.changeContents(updateDto.getTitle(), updateDto.getDescription());
+
+//        roadMap.changeNodeTree(updateDto.getNodeDtoList());
 
         List<RoadMapTag> newRoadMapTags = new ArrayList<>();
-        if (updateDto.getNewTags() != null && updateDto.getNewTags().size() != 0) {
+
+        if (updateDto.hasNewTags()) {
             List<Tag> tagList = updateDto.getNewTags().stream()
                     .map(Tag::new).collect(Collectors.toList());
 
@@ -102,6 +103,7 @@ public class RoadMapService {
         // todo: add to roadMapHistory
 
         JSONObject json = new JSONObject();
+        json.put("id", roadMapId);
         json.put("result", true);
 
         return json;

@@ -1,0 +1,41 @@
+package com.sillimfive.mymap.web.dto.roadmap;
+
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+import java.util.List;
+
+@Getter @Setter
+@ToString
+public class RoadMapEditDto {
+    private boolean imageChanged;
+
+    @Min(value = 1)
+    private Long imageId;
+
+    @NotBlank
+    private String title;
+    private String description;
+
+    @Min(value = 1)
+    private Long categoryId;
+
+    @ArraySchema(schema = @Schema(example = "1"))
+    private List<@Min(value = 1) Long> roadMapTagIds;
+
+    @ArraySchema(schema = @Schema(example = "jpa"))
+    private List<@NotBlank String> newTags;
+
+    @ArraySchema(minItems = 1, schema = @Schema(implementation = RoadMapNodeEditDto.class))
+    private List<RoadMapNodeEditDto> nodeDtoList;
+
+    @Schema(hidden = true)
+    public boolean hasNewTags() {
+        return newTags != null && !newTags.isEmpty();
+    }
+}

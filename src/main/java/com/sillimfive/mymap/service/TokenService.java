@@ -1,8 +1,11 @@
 package com.sillimfive.mymap.service;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sillimfive.mymap.config.jwt.TokenProvider;
+import com.sillimfive.mymap.domain.RefreshToken;
 import com.sillimfive.mymap.domain.User;
+import com.sillimfive.mymap.repository.RefreshTokenRepository;
 import com.sillimfive.mymap.repository.UserRepository;
 import com.sillimfive.mymap.web.dto.token.AuthenticationTokenResponse;
 import com.sillimfive.mymap.web.dto.token.payload.GooglePayload;
@@ -18,10 +21,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -33,8 +38,9 @@ public class TokenService {
     private final UserService userService;
     private final UserRepository userRepository;
     private final RestTemplate restTemplate;
+    private final RefreshTokenRepository refreshTokenRepository;
 
-    public static final Duration REFRESH_TOKEN_DURATION = Duration.ofHours(3);
+    public static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(7);
     public static final Duration ACCESS_TOKEN_DURATION = Duration.ofHours(1);
 
     private final static String TOKEN_TYPE_KAKAO = "kakao";
@@ -56,15 +62,19 @@ public class TokenService {
 
     public AuthenticationTokenResponse getAuthTokenResponse(String accessToken, String tokenType){
 
-        User user = getOauthUser(accessToken, tokenType);
+        User oAuthUser = getOauthUser(accessToken, tokenType);
         // todo - 저장 서비스, 토큰 발급 서비스  -> 이후 return spec 파싱
+
+        Optional<User> findUser = userRepository.findByEmail(oAuthUser.getEmail());
+
+        User user = findUser.orElseGet(() -> userRepository.save(oAuthUser));
         AuthenticationTokenResponse authTokenResponse = createAuthTokenResponse(user);
 
-        //user 저장, contextHolder user 객체 저장
+        saveRefreshToken(user.getId(), authTokenResponse.getRefreshToken());
+
         Authentication authentication = tokenProvider.getAuthentication(authTokenResponse.getAccessToken());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        userRepository.save(user);
 
         return authTokenResponse;
     }
@@ -101,6 +111,7 @@ public class TokenService {
      * 헤더 "Authorization: Bearer ${ACCESS_TOKEN}"
      * */
     public User getOauthUser(String accessToken, String tokenType){
+        log.info("accessToken : {}", accessToken);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + accessToken);
 
@@ -112,9 +123,10 @@ public class TokenService {
 
             // todo payload 값 확인
             return getPayload(tokenType, responseEntity.getBody());
+        }else{
+            // todo 200 아닐때 에러 처리
+            throw new ResponseStatusException(responseEntity.getStatusCode());
         }
-        // todo 200 아닐때 에러 처리
-        return null;
     }
 
     private String setApiUri(String tokenType){
@@ -137,6 +149,7 @@ public class TokenService {
         //구글 userinfo 값 꺼내 파싱
         ObjectMapper objectMapper = new ObjectMapper();
         try {
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             GooglePayload payload = objectMapper.readValue(payloadBody, GooglePayload.class);
             // todo user 객체 데이터 확인 필요 -
             log.info("google payload : {}", payload);
@@ -147,14 +160,15 @@ public class TokenService {
                     .build();
         }catch (Exception e){
             //todo 예외 처리
+            throw new IllegalArgumentException(e);
         }
-        return null;
     }
 
     private User kakaoPayload(String payloadBody){
         //카카오 userinfo 값 꺼내 파싱
         ObjectMapper objectMapper = new ObjectMapper();
         try {
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             KakaoPayload payload = objectMapper.readValue(payloadBody, KakaoPayload.class);
             // todo user 객체 데이터 확인 필요
             log.info("kakao payload : {}", payload);
@@ -164,8 +178,16 @@ public class TokenService {
                     .build();
         }catch (Exception e){
             //todo 예외 처리
+            throw new IllegalArgumentException(e);
         }
-        return null;
+    }
+
+    public void saveRefreshToken(Long userId, String newRefreshToken){
+        RefreshToken refreshToken = refreshTokenRepository.findByUserId(userId)
+                .map(entity -> entity.update(newRefreshToken))
+                .orElse(new RefreshToken(userService.findById(userId), newRefreshToken));
+
+        refreshTokenRepository.save(refreshToken);
     }
 
 }
