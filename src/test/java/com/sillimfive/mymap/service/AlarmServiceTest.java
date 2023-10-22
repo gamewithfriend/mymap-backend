@@ -45,8 +45,8 @@ public class AlarmServiceTest {
     @BeforeEach
     void init() {
         User user = User.builder()
-                .email("test@gmail.com")
-                .nickName("mun1103")
+                .email(UUID.randomUUID() + "testJung@gmail.com")
+                .nickName(UUID.randomUUID() + "test")
                 .build();
         userRepository.save(user);
         em.flush();
@@ -55,10 +55,10 @@ public class AlarmServiceTest {
 
     @Test
     @DisplayName("알람 생성")
-    @Rollback(false)
+    @Rollback(true)
     void create() {
 
-        User userTest = userRepository.findByEmail("test@gmail.com").get();
+        User userTest = userRepository.findAll().stream().findAny().get();
 
         //when
         Long alarmId = alarmService.create("alram01",userTest);
@@ -73,10 +73,10 @@ public class AlarmServiceTest {
 
     @Test
     @DisplayName("유저 알람 리스트 조회")
-    @Rollback(false)
+    @Rollback(true)
     void selectUserAlarmList() {
 
-        User userTest = userRepository.findByEmail("test@gmail.com").get();
+        User userTest = userRepository.findAll().stream().findAny().get();
         Long alarmId1 = alarmService.create("alram01",userTest);
         Long alarmId2 = alarmService.create("alram02",userTest);
         Long alarmId3 = alarmService.create("alram03",userTest);
@@ -93,10 +93,10 @@ public class AlarmServiceTest {
 
     @Test
     @DisplayName("유저 알람 삭제")
-    @Rollback(false)
+    @Rollback(true)
     void deleteUserAlarmList() {
 
-        User userTest = userRepository.findByEmail("test@gmail.com").get();
+        User userTest = userRepository.findAll().stream().findAny().get();
         Long alarmId1 = alarmService.create("alram01",userTest);
         Long alarmId2 = alarmService.create("alram02",userTest);
         Long alarmId3 = alarmService.create("alram03",userTest);
@@ -120,10 +120,10 @@ public class AlarmServiceTest {
 
     @Test
     @DisplayName("알람 읽기")
-    @Rollback(false)
+    @Rollback(true)
     void readAlarm() {
 
-        User userTest = userRepository.findByEmail("test@gmail.com").get();
+        User userTest = userRepository.findAll().stream().findAny().get();
         Long userTestId = userTest.getId();
 
         //when
@@ -140,10 +140,10 @@ public class AlarmServiceTest {
 
     @Test
     @DisplayName("유저 읽지않은 알람 수")
-    @Rollback(false)
+    @Rollback(true)
     void countNotReadAlarm() {
 
-        User userTest = userRepository.findByEmail("test@gmail.com").get();
+        User userTest = userRepository.findAll().stream().findAny().get();
         Long alarmId1 = alarmService.create("alram01",userTest);
         Long alarmId2 = alarmService.create("alram02",userTest);
         Long alarmId3 = alarmService.create("alram03",userTest);

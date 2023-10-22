@@ -59,12 +59,7 @@ public class AlarmQuerydslRepository {
         queryFactory
                 .update(alarm)
                 .set(alarm.readFlag, true)
-                .where(alarm.id.in(
-                        JPAExpressions
-                                .select(alarm.id)
-                                .from(alarm)
-                                .where(alarm.id.eq(userId),alarm.readFlag.eq(false))
-                ))
+                .where(alarm.user.id.eq(userId), alarm.readFlag.eq(false)  )
                 .execute();
 
     }

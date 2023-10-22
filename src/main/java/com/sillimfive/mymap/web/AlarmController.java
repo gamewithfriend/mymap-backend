@@ -53,7 +53,7 @@ public class AlarmController {
         return ResponseEntity.ok(json);
     }
 
-    @Operation(summary = "유저 알람 읽기", description = "User read Alarm ")
+    @Operation(summary = "유저 알람 읽기처리", description = "User read Alarm ")
     @PutMapping
     public ResponseEntity<?> readAlarm(Authentication authentication) {
         JSONObject json = new JSONObject();
