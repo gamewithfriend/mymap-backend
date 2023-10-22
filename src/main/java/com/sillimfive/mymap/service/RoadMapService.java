@@ -86,9 +86,9 @@ public class RoadMapService {
 
         if (!roadMap.getCategory().equals(foundCategory)) roadMap.changeCategory(foundCategory);
 
-        boolean contentsChanged = roadMap.changeContents(updateDto.getTitle(), updateDto.getDescription());
+//        boolean contentsChanged = roadMap.changeContents(updateDto.getTitle(), updateDto.getDescription());
 
-        roadMap.changeNodeTree(updateDto.getNodeDtoList());
+//        roadMap.changeNodeTree(updateDto.getNodeDtoList());
 
         List<RoadMapTag> newRoadMapTags = new ArrayList<>();
 
