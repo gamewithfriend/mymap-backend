@@ -1,5 +1,6 @@
 package com.sillimfive.mymap.service;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sillimfive.mymap.config.jwt.TokenProvider;
 import com.sillimfive.mymap.domain.User;
@@ -138,6 +139,7 @@ public class TokenService {
         //구글 userinfo 값 꺼내 파싱
         ObjectMapper objectMapper = new ObjectMapper();
         try {
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             GooglePayload payload = objectMapper.readValue(payloadBody, GooglePayload.class);
             // todo user 객체 데이터 확인 필요 -
             log.info("google payload : {}", payload);
@@ -156,6 +158,7 @@ public class TokenService {
         //카카오 userinfo 값 꺼내 파싱
         ObjectMapper objectMapper = new ObjectMapper();
         try {
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             KakaoPayload payload = objectMapper.readValue(payloadBody, KakaoPayload.class);
             // todo user 객체 데이터 확인 필요
             log.info("kakao payload : {}", payload);
