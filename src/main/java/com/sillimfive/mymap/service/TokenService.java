@@ -21,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -122,9 +123,10 @@ public class TokenService {
 
             // todo payload 값 확인
             return getPayload(tokenType, responseEntity.getBody());
+        }else{
+            // todo 200 아닐때 에러 처리
+            throw new ResponseStatusException(responseEntity.getStatusCode());
         }
-        // todo 200 아닐때 에러 처리
-        return null;
     }
 
     private String setApiUri(String tokenType){
