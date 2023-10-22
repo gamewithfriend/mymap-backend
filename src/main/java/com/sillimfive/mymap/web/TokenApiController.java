@@ -32,6 +32,10 @@ public class TokenApiController {
     private String clientId;
     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
     private String redirectUri;
+    @Value("${spring.security.oauth2.client.registration.google.client-id}")
+    private String googleClientId;
+    @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
+    private String googleRedirectUri;
 
     @Operation(summary = "로그인 토큰 발급",
                 description = "<b>Receives tokens (accessToken, refreshToken) and userInfo</b><br>" +
@@ -72,4 +76,19 @@ public class TokenApiController {
 
         return url;
     }
+
+    @GetMapping("/test/google")
+    public String google(){
+        String url = new StringBuilder("https://accounts.google.com/o/oauth2/v2/auth?" +
+                "scope=https%3A//www.googleapis.com/auth/drive.metadata.readonly&" +
+                "access_type=offline&" +
+                "include_granted_scopes=true&" +
+                "response_type=code")
+                .append("&redirect_uri=").append(URLEncoder.encode(googleRedirectUri, StandardCharsets.UTF_8))
+                .append("&client_id=").append(googleClientId).toString();
+        return url;
+
+    }
+
+
 }
