@@ -34,7 +34,7 @@ public class TokenService {
     private final UserRepository userRepository;
     private final RestTemplate restTemplate;
 
-    public static final Duration REFRESH_TOKEN_DURATION = Duration.ofHours(3);
+    public static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(7);
     public static final Duration ACCESS_TOKEN_DURATION = Duration.ofHours(1);
 
     private final static String TOKEN_TYPE_KAKAO = "kakao";
@@ -101,6 +101,7 @@ public class TokenService {
      * 헤더 "Authorization: Bearer ${ACCESS_TOKEN}"
      * */
     public User getOauthUser(String accessToken, String tokenType){
+        log.info("accessToken : {}", accessToken);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + accessToken);
 

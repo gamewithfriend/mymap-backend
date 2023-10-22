@@ -41,6 +41,7 @@ public class TokenApiController {
     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
     private String redirectUri;
 
+    @Operation(summary = "로그인 토큰 발급")
     @PostMapping
     public ResponseEntity<AuthenticationTokenResponse> OauthAuthenticateToken(@RequestBody AuthenticationTokenRequest tokenRequest){
 
