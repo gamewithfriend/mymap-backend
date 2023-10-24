@@ -15,9 +15,10 @@ public class Image {
     private Long id;
 
     private String path;
-    private String imageType;
+    @Enumerated(EnumType.STRING)
+    private ImageType imageType;
 
-    public Image(String path, String imageType) {
+    public Image(String path, ImageType imageType) {
         this.path = path;
         this.imageType = imageType;
     }

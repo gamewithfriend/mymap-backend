@@ -40,8 +40,13 @@ class ImageServiceTest {
         String datetime = LocalDateTime.now().format(pattern);
         System.out.println("formattedDatetime = " + datetime);
 
+        String os = System.getProperty("os.name");
+        String dirPath;
+        if (os.equals("Linux")) dirPath = "/home/mymap";
+        else dirPath = "D:\\path\\";
+
         StringBuffer sb = new StringBuffer(datetime);
-        sb.insert(0, "/home/mymap/{imageType}/");
+        sb.insert(0, dirPath + File.separator + "{imageType}" + File.separator);
         System.out.println("imageFileName = " + sb);
     }
 
@@ -52,7 +57,7 @@ class ImageServiceTest {
         //given
         MultipartFile mockMultipartFile = new MockMultipartFile("test", "imageFile content".getBytes());
         Long userId = 1L;
-        ImageType imageType = ImageType.ROADMAP;
+        ImageType imageType = ImageType.ROADMAPS;
 
         //when
         Long imageId = imageService.save(mockMultipartFile, userId, imageType);

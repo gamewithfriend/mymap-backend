@@ -35,12 +35,14 @@ public class ImageService {
         String fullName = getFullName(userId, type);
         multipartFile.transferTo(new File(fullName));
 
-        return imageRepository.save(new Image(URLEncoder.encode(fullName, StandardCharsets.UTF_8), type.toString())).getId();
+        return imageRepository.save(new Image(URLEncoder.encode(fullName, StandardCharsets.UTF_8), type)).getId();
     }
 
     @Transactional
-    public void remove(Long imageId) {
-        imageRepository.deleteById(imageId);
+    public void remove(String imagePath) {
+        //todo: remove imageFile from s3
+
+//        imageRepository.deleteById(imageId);
     }
 
     /**
@@ -73,7 +75,7 @@ public class ImageService {
         Assert.isTrue(file.exists(), "Can't find image file in file system");
         file.delete();
 
-        String fullName = getFullName(userId, ImageType.valueOf(image.getImageType()));
+        String fullName = getFullName(userId, ImageType.valueOf(image.getImageType().toString()));
         multipartFile.transferTo(new File(fullName));
         image.changePath(fullName);
 
