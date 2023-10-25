@@ -12,8 +12,6 @@ public class RoadMapNodeResponseDto {
     private Long roadMapId;
     @Schema(example = "1")
     private Long nodeId;
-    @Schema(nullable = true, example = "null")
-    private Long parentNodeId;
     private int order;
     @Schema(example = "EntityManger 에 의한 영속성 관리")
     private String content;
@@ -23,8 +21,6 @@ public class RoadMapNodeResponseDto {
     public RoadMapNodeResponseDto(RoadMapNode node) {
         this.roadMapId = node.getRoadMap().getId();
         this.nodeId = node.getId();
-        this.parentNodeId =
-                Optional.ofNullable(node.getParent()).isPresent() ? node.getParent().getId() : null;
         this.content = node.getNodeContent();
         this.title = node.getNodeTitle();
         this.order = node.getNodeOrder();

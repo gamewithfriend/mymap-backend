@@ -2,6 +2,7 @@ package com.sillimfive.mymap.service;
 
 import com.sillimfive.mymap.domain.Category;
 import com.sillimfive.mymap.domain.Image;
+import com.sillimfive.mymap.domain.ImageType;
 import com.sillimfive.mymap.domain.User;
 import com.sillimfive.mymap.domain.roadmap.RoadMap;
 import com.sillimfive.mymap.domain.roadmap.RoadMapNode;
@@ -34,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @Transactional
-@ActiveProfiles(value = {"maria", "oauth"})
+@ActiveProfiles(value = {"maria", "oauth", "cloud"})
 class RoadMapServiceTest {
 
     @PersistenceContext
@@ -61,7 +62,7 @@ class RoadMapServiceTest {
                 .build();
         userRepository.save(user);
         categoryRepository.save(new Category("백엔드"));
-        imageRepository.save(new Image("/home/ubuntu/temp", "roadMap"));
+        imageRepository.save(new Image("/home/ubuntu/temp", ImageType.ROADMAPS));
 
         em.flush();
         em.clear();
@@ -89,9 +90,11 @@ class RoadMapServiceTest {
         createDto.setNodeDtoList(roadMapNodeDtoList);
         createDto.setCategoryId(categoryId);
         createDto.setNewTags(newTags);
+        createDto.setImageId(imageId);
 
         //when
-        Long roadMapId = roadMapService.create(userId, imageId, createDto);
+        JSONObject json = roadMapService.create(userId, createDto);
+        Long roadMapId = (Long) json.get("id");
         Optional<RoadMap> findOne = roadMapRepository.findById(roadMapId);
 
         //then

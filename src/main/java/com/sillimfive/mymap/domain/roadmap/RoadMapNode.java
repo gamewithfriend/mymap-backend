@@ -1,6 +1,7 @@
 package com.sillimfive.mymap.domain.roadmap;
 
 import com.sillimfive.mymap.domain.BaseTimeEntity;
+import com.sillimfive.mymap.web.dto.roadmap.RoadMapNodeEditDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -22,20 +23,13 @@ public class RoadMapNode extends BaseTimeEntity {
 
     private int nodeOrder;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id")
-    private RoadMapNode parent;
-
     // todo : content length 조건을 어떻게 할지 확인 필요
     private String nodeContent;
     private String nodeTitle;
 
-    private boolean deleteFlag;
-
     @Builder
-    public RoadMapNode(int nodeOrder, RoadMapNode parent, String nodeContent, String nodeTitle) {
+    public RoadMapNode(int nodeOrder, String nodeContent, String nodeTitle) {
         this.nodeOrder = nodeOrder;
-        this.parent = parent;
         this.nodeContent = nodeContent;
         this.nodeTitle = nodeTitle;
     }
@@ -44,12 +38,33 @@ public class RoadMapNode extends BaseTimeEntity {
         this.roadMap = roadMap;
     }
 
-    public void setParentNode(RoadMapNode parent) {
-        this.parent = parent;
+    /**
+     *
+     * @param nodeDtoOrder
+     * @return
+     */
+    protected boolean changeNodeOrder(int nodeDtoOrder) {
+        if (this.nodeOrder != nodeDtoOrder) {
+            this.nodeOrder = nodeDtoOrder;
+            return true;
+        }
+
+        return false;
     }
 
-    protected void changeNodeDetail(String title, String content) {
-        this.nodeTitle = title;
-        this.nodeContent = content;
+    /**
+     *
+     * @param title
+     * @param content
+     * @return
+     */
+    protected boolean changeNodeDetail(String title, String content) {
+        if (!this.nodeTitle.equals(title) || !this.nodeContent.equals(content)) {
+            this.nodeTitle = title;
+            this.nodeContent = content;
+            return true;
+        }
+
+        return false;
     }
 }
