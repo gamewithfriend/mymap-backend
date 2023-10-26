@@ -23,6 +23,8 @@ import java.util.List;
 @ToString
 public class RoadMapCreateDto {
 
+    private Long imageId;
+
     @NotBlank(message = "title can't be blank")
     @Schema(example = "JPA 학습 로드맵")
     private String title;
@@ -55,20 +57,11 @@ public class RoadMapCreateDto {
 
         List<RoadMapNode> nodeList = new ArrayList<>();
 
-        RoadMapNodeCreateDto rootDto = nodeDtoList.get(0);
-        RoadMapNode root = RoadMapNode.builder()
-                .nodeOrder(0)
-                .nodeTitle(rootDto.getNodeTitle())
-                .nodeContent(rootDto.getNodeContent())
-                .build();
-        nodeList.add(root);
-
-        for (int i=1; i<nodeDtoList.size(); i++) {
+        for (int i=0; i<nodeDtoList.size(); i++) {
             RoadMapNodeCreateDto nodeDto = nodeDtoList.get(i);
 
             RoadMapNode node = RoadMapNode.builder()
                     .nodeOrder(i)
-                    .parent(nodeList.get(i-1))
                     .nodeTitle(nodeDto.getNodeTitle())
                     .nodeContent(nodeDto.getNodeContent())
                     .build();

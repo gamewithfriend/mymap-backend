@@ -4,7 +4,7 @@ import com.sillimfive.mymap.domain.BaseTimeEntity;
 import com.sillimfive.mymap.domain.Category;
 import com.sillimfive.mymap.domain.Image;
 import com.sillimfive.mymap.domain.User;
-import com.sillimfive.mymap.web.dto.roadmap.RoadMapNodeUpdateDto;
+import com.sillimfive.mymap.web.dto.roadmap.RoadMapNodeEditDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -12,9 +12,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.BatchSize;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Entity
@@ -93,19 +94,69 @@ public class RoadMap extends BaseTimeEntity {
         this.category = category;
     }
 
-    public void changeContents(String title, String description) {
-        this.title = title;
-        this.description = description;
+    public void changeImage(Image image) {
+        this.image = image;
     }
 
-    public void changeNodeTree(List<RoadMapNodeUpdateDto> nodeDtoList) {
-        for (RoadMapNode roadMapNode : roadMapNodes) {
-            for (RoadMapNodeUpdateDto nodeDto : nodeDtoList) {
-                if (roadMapNode.getId().equals(nodeDto.getId())) {
-                    roadMapNode.changeNodeDetail(nodeDto.getNodeTitle(), nodeDto.getNodeContent());
+    /**
+     * 로드맵의 제목이나 설명이 변경되었다면 true 반환.
+     * 그렇지 않다면 false 반환
+     *
+     * @param title
+     * @param description
+     * @return true if title or description has been changed, or false
+     */
+    public boolean changeContents(String title, String description) {
+        if (!this.title.equals(title) || !this.description.equals(description)) {
+            this.title = title;
+            this.description = description;
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * 로드맵의 노드트리의 구성이 변경되었다면 true 반환.
+     * 그렇지 않다면 false 반환
+     *
+     * @param nodeDtoList
+     * @return
+     */
+    public boolean changeNodeTree(List<RoadMapNodeEditDto> nodeDtoList) {
+        boolean changedFlag = false;
+        List<RoadMapNode> deleteList = new ArrayList<>();
+        deleteList.addAll(roadMapNodes);
+
+        Collections.sort(nodeDtoList, Comparator.comparing(RoadMapNodeEditDto::getId));
+
+        for (RoadMapNodeEditDto nodeDto : nodeDtoList) {
+            if (nodeDto.getId().equals(-1)) {
+                RoadMapNode node = RoadMapNode.builder()
+                                .nodeOrder(nodeDto.getOrder())
+                                .nodeTitle(nodeDto.getNodeTitle())
+                                .nodeContent(nodeDto.getNodeContent())
+                                .build();
+                roadMapNodes.add(nodeDto.getOrder(), node);
+                changedFlag = true;
+            }
+            else {
+                for (RoadMapNode node : roadMapNodes) {
+                    if (!nodeDto.getId().equals(node.getId())) continue;
+
+                    boolean isOrderChanged = node.changeNodeOrder(nodeDto.getOrder());
+                    boolean isDetailChanged = node.changeNodeDetail(nodeDto.getNodeTitle(), nodeDto.getNodeContent());
+
+                    changedFlag = isOrderChanged || isDetailChanged ? true : changedFlag;
+
+                    deleteList.remove(node);
                 }
             }
         }
+
+        if (roadMapNodes.size() != deleteList.size()) changedFlag = true;
+
+        return changedFlag;
     }
 
     public void updateRoadMapTags(List<Long> roadMapTagIdList, List<RoadMapTag> newTags) {

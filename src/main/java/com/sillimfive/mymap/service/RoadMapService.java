@@ -1,7 +1,9 @@
 package com.sillimfive.mymap.service;
 
+import com.sillimfive.mymap.common.JSONBuilder;
 import com.sillimfive.mymap.domain.Category;
 import com.sillimfive.mymap.domain.Image;
+import com.sillimfive.mymap.domain.ImageType;
 import com.sillimfive.mymap.domain.User;
 import com.sillimfive.mymap.domain.roadmap.RoadMap;
 import com.sillimfive.mymap.domain.roadmap.RoadMapTag;
@@ -39,14 +41,16 @@ public class RoadMapService {
 
     // todo: batch insert for node, tag
     @Transactional
-    public Long create(Long userId, Long imageId, RoadMapCreateDto createDto) {
+    public JSONObject create(Long userId, RoadMapCreateDto createDto) {
 
         // find category, tag information
         Optional<Category> category = categoryRepository.findById(createDto.getCategoryId());
         Assert.isTrue(category.isPresent(), "Category should not be null");
 
-        List<Tag> tags = new ArrayList<>();
+        Image image = imageRepository.findById(createDto.getImageId())
+                .orElseThrow(() -> new IllegalArgumentException("image is not found for " + createDto.getImageId()));
 
+        List<Tag> tags = new ArrayList<>();
         if (Optional.ofNullable(createDto.getTagIds()).isPresent())
             tags.addAll(tagRepository.findByIdIn(createDto.getTagIds()));
 
@@ -61,7 +65,6 @@ public class RoadMapService {
         List<RoadMapTag> roadMapTags = RoadMapTag.createRoadMapTags(tags);
 
         // create RoadMapNode, RoadMap
-        Image image = imageRepository.findById(imageId).get();
         User user = userRepository.findById(userId).get();
 
         RoadMap roadMap = createDto.convert(user, category.get(), image);
@@ -70,25 +73,30 @@ public class RoadMapService {
 
         roadMapRepository.save(roadMap);
 
-        return roadMap.getId();
+        return JSONBuilder.create()
+                .put("id", roadMap.getId())
+                .build();
     }
 
     @Transactional
     public JSONObject edit(Long roadMapId, RoadMapEditDto updateDto) {
-        Optional<RoadMap> r1 = roadMapQuerydslRepository.findByIdWithNode(roadMapId);
-        if (r1.isEmpty())
-            throw new IllegalArgumentException("there is no roadMap");
+        RoadMap roadMap = roadMapQuerydslRepository.findByIdWithNode(roadMapId)
+                .orElseThrow(() -> new IllegalArgumentException("There is no roadMap"));
 
-        RoadMap roadMap = r1.get();
+        if (!roadMap.getImage().getId().equals(updateDto.getImageId())) {
+            Image image = imageRepository.findById(updateDto.getImageId())
+                    .orElseThrow(() -> new IllegalArgumentException());
 
-        Category foundCategory = categoryRepository.findById(updateDto.getCategoryId()).orElseThrow(()
-                -> new IllegalArgumentException("There is no category searched"));
+            roadMap.changeImage(image);
+        }
+
+        Category foundCategory = categoryRepository.findById(updateDto.getCategoryId())
+                .orElseThrow(() -> new IllegalArgumentException("There is no category searched"));
 
         if (!roadMap.getCategory().equals(foundCategory)) roadMap.changeCategory(foundCategory);
 
-//        boolean contentsChanged = roadMap.changeContents(updateDto.getTitle(), updateDto.getDescription());
-
-//        roadMap.changeNodeTree(updateDto.getNodeDtoList());
+        boolean contentsChanged = roadMap.changeContents(updateDto.getTitle(), updateDto.getDescription());
+        boolean nodeChanged = roadMap.changeNodeTree(updateDto.getNodeDtoList());
 
         List<RoadMapTag> newRoadMapTags = new ArrayList<>();
 
@@ -102,14 +110,12 @@ public class RoadMapService {
 
         // todo: add to roadMapHistory
 
-        JSONObject json = new JSONObject();
-        json.put("id", roadMapId);
-        json.put("result", true);
-
-        return json;
+        return JSONBuilder.create()
+                .put("id", roadMapId)
+                .build();
     }
 
-    public RoadMapDetailResponseDto findById(Long id) {
+    public JSONObject findById(Long id) {
         RoadMap roadMap = roadMapQuerydslRepository.findByIdWithNode(id).orElseThrow(()
                 -> new IllegalArgumentException("There is no roadMap for " + id));
 
@@ -120,7 +126,9 @@ public class RoadMapService {
         RoadMapDetailResponseDto response = new RoadMapDetailResponseDto(roadMap);
         response.addTags(tags);
 
-        return response;
+        return JSONBuilder.create()
+                .put("roadMapDetail", response)
+                .build();
     }
 
     public PageImpl<RoadMapResponseDto> findListBy(RoadMapSearch searchCondition, Pageable pageable) {

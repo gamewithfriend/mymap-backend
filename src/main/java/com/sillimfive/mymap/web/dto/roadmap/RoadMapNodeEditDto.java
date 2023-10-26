@@ -6,7 +6,6 @@ import lombok.Setter;
 
 @Getter @Setter
 public class RoadMapNodeEditDto {
-    @Min(value = 1)
     private Long id;
     private int order;
     private String nodeContent;

@@ -13,7 +13,6 @@ import java.util.List;
 @Getter @Setter
 @ToString
 public class RoadMapEditDto {
-    private boolean imageChanged;
 
     @Min(value = 1)
     private Long imageId;
