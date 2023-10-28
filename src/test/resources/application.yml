@@ -1,6 +1,6 @@
 spring:
   profiles:
-    include: oauth
+    include: oauth, cloud
   datasource:
     url: jdbc:h2:tcp://localhost/D:/h2/mymap
     username: sa
