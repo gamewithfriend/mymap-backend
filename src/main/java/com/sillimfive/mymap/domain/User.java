@@ -29,6 +29,10 @@ public class User extends BaseTimeEntity implements UserDetails {
     private String userState; // 코드테이블 에서 관리 - user01 (일반), user02 (휴면)....
     private LocalDateTime lastLogin;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "image_id")
+    private Image image;
+
     @Builder
     public User(Long id, String email, String loginId, String nickName, String userState, LocalDateTime lastLogin) {
         this.id = id;

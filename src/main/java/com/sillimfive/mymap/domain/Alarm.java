@@ -1,5 +1,6 @@
 package com.sillimfive.mymap.domain;
 
+import com.sillimfive.mymap.domain.roadmap.RoadMapReply;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -11,21 +12,24 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Alarm extends BaseTimeEntity{
+public class Alarm extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "alarm_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY ,cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reply_id")
+    private RoadMapReply roadMapReply;
 
     private String alarmType;
     private boolean deleteFlag;
     private boolean readFlag;
-    private LocalDateTime createdDate;
 
     @Builder
     protected Alarm(String alarmType, boolean deleteFlag, boolean readFlag, User user){
@@ -43,8 +47,5 @@ public class Alarm extends BaseTimeEntity{
                 .readFlag(readFlag)
                 .user(user)
                 .build();
-
     }
-
-
 }
