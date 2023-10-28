@@ -4,7 +4,7 @@ import com.sillimfive.mymap.domain.Alarm;
 import com.sillimfive.mymap.domain.User;
 import com.sillimfive.mymap.repository.AlarmRepository;
 import com.sillimfive.mymap.repository.UserRepository;
-import com.sillimfive.mymap.web.dto.roadmap.AlarmResponseDto;
+import com.sillimfive.mymap.web.dto.alarm.AlarmResponseDto;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +16,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

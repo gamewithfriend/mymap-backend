@@ -1,4 +1,4 @@
-package com.sillimfive.mymap.web.dto.roadmap;
+package com.sillimfive.mymap.web.dto.alarm;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sillimfive.mymap.domain.Alarm;

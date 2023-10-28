@@ -6,7 +6,7 @@ import com.sillimfive.mymap.repository.AlarmQuerydslRepository;
 import com.sillimfive.mymap.repository.AlarmRepository;
 import com.sillimfive.mymap.repository.CodeRepository;
 import com.sillimfive.mymap.repository.UserRepository;
-import com.sillimfive.mymap.web.dto.roadmap.AlarmResponseDto;
+import com.sillimfive.mymap.web.dto.alarm.AlarmResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

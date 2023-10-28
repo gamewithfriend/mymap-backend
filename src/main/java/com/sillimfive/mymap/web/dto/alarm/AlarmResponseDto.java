@@ -1,4 +1,4 @@
-package com.sillimfive.mymap.web.dto.roadmap;
+package com.sillimfive.mymap.web.dto.alarm;
 
 import com.sillimfive.mymap.domain.Alarm;
 import com.sillimfive.mymap.domain.roadmap.RoadMap;
