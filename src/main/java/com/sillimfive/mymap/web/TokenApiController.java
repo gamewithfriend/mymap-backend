@@ -5,12 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sillimfive.mymap.common.JSONBuilder;
 import com.sillimfive.mymap.service.TokenService;
 import com.sillimfive.mymap.web.dto.Error;
-import com.sillimfive.mymap.web.dto.ResultSet;
+import com.sillimfive.mymap.web.dto.MyMapResponse;
 import com.sillimfive.mymap.web.dto.token.AuthenticationTokenRequest;
 import com.sillimfive.mymap.web.dto.token.AuthenticationTokenResponse;
 import com.sillimfive.mymap.web.dto.token.CreateAccessTokenRequest;
 import com.sillimfive.mymap.web.dto.token.CreateAccessTokenResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,21 +60,20 @@ public class TokenApiController {
     }
 
     @Operation(summary = "액세스 토큰 갱신", description = "Refresh access token (desc)")
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "500")
+        }
+    )
     @PostMapping("/renew")
-    public ResultSet createNewAccessToken(
+    public MyMapResponse createNewAccessToken(
             @RequestBody CreateAccessTokenRequest request
     ){
         String newAccessToken = tokenService.createNewAccessToken(request.getRefreshToken());
 
-        Error error = Error.builder()
-                .code(HttpStatus.CREATED)
-                .message("토큰 발급 성공 ").build();
-
-        return ResultSet.builder()
-                .error(error)
-                .data(new CreateAccessTokenResponse(newAccessToken))
-                .result("SUCCESS")
-                .build();
+        return MyMapResponse.create()
+                .succeed()
+                .buildWith(new CreateAccessTokenResponse(newAccessToken));
     }
 
     @Operation(summary = "OAuth accessToken 얻기 - kakao")
