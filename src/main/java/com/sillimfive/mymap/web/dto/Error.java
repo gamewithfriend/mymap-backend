@@ -15,6 +15,7 @@ import java.util.Objects;
 
 @Getter
 @NoArgsConstructor
+@Schema(example = "null")
 public class Error {
 
     private HttpStatus code;

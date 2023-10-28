@@ -41,7 +41,7 @@ public class RoadMapService {
 
     // todo: batch insert for node, tag
     @Transactional
-    public JSONObject create(Long userId, RoadMapCreateDto createDto) {
+    public Long create(Long userId, RoadMapCreateDto createDto) {
 
         // find category, tag information
         Optional<Category> category = categoryRepository.findById(createDto.getCategoryId());
@@ -73,13 +73,11 @@ public class RoadMapService {
 
         roadMapRepository.save(roadMap);
 
-        return JSONBuilder.create()
-                .put("id", roadMap.getId())
-                .build();
+        return roadMap.getId();
     }
 
     @Transactional
-    public JSONObject edit(Long roadMapId, RoadMapEditDto updateDto) {
+    public Long edit(Long roadMapId, RoadMapEditDto updateDto) {
         RoadMap roadMap = roadMapQuerydslRepository.findByIdWithNode(roadMapId)
                 .orElseThrow(() -> new IllegalArgumentException("There is no roadMap"));
 
@@ -110,12 +108,10 @@ public class RoadMapService {
 
         // todo: add to roadMapHistory
 
-        return JSONBuilder.create()
-                .put("id", roadMapId)
-                .build();
+        return roadMapId;
     }
 
-    public JSONObject findById(Long id) {
+    public RoadMapDetailResponseDto findById(Long id) {
         RoadMap roadMap = roadMapQuerydslRepository.findByIdWithNode(id).orElseThrow(()
                 -> new IllegalArgumentException("There is no roadMap for " + id));
 
@@ -126,9 +122,7 @@ public class RoadMapService {
         RoadMapDetailResponseDto response = new RoadMapDetailResponseDto(roadMap);
         response.addTags(tags);
 
-        return JSONBuilder.create()
-                .put("roadMapDetail", response)
-                .build();
+        return response;
     }
 
     public PageImpl<RoadMapResponseDto> findListBy(RoadMapSearch searchCondition, Pageable pageable) {

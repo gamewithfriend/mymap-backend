@@ -29,7 +29,7 @@ public class RoadMapDetailResponseDto {
     private String description;
     @Min(1) @Schema(example = "1")
     private Long imageId;
-    @Schema(example = "https://aws-northeast-mymap.s3.ap-northeast-2.amazonaws.com/ROADMAP/202310222336511")
+    @Schema(example = "https://aws-northeast-mymap.s3.ap-northeast-2.amazonaws.com/ROADMAPS/202310222336511")
     private String imageDownloadPath;
 
     public RoadMapDetailResponseDto(RoadMap roadMap) {
