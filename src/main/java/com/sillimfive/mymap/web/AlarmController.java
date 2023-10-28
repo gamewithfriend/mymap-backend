@@ -2,9 +2,8 @@ package com.sillimfive.mymap.web;
 
 import com.sillimfive.mymap.domain.User;
 import com.sillimfive.mymap.service.AlarmService;
-import com.sillimfive.mymap.web.dto.roadmap.AlarmDeleteDto;
-import com.sillimfive.mymap.web.dto.roadmap.AlarmResponseDto;
-import com.sillimfive.mymap.web.dto.roadmap.RoadMapCreateDto;
+import com.sillimfive.mymap.web.dto.alarm.AlarmDeleteDto;
+import com.sillimfive.mymap.web.dto.alarm.AlarmResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
