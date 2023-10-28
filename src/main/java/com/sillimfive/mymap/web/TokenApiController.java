@@ -1,5 +1,8 @@
 package com.sillimfive.mymap.web;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sillimfive.mymap.common.JSONBuilder;
 import com.sillimfive.mymap.service.TokenService;
 import com.sillimfive.mymap.web.dto.Error;
 import com.sillimfive.mymap.web.dto.ResultSet;
@@ -11,13 +14,16 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 @Tag(name = "Authentication", description = "token generation API")
 @Slf4j
@@ -27,6 +33,7 @@ import java.nio.charset.StandardCharsets;
 public class TokenApiController {
 
     private final TokenService tokenService;
+    private final RestTemplate restTemplate;
 
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String clientId;
@@ -68,6 +75,7 @@ public class TokenApiController {
                 .build();
     }
 
+    @Operation(summary = "OAuth accessToken 얻기 - kakao")
     @GetMapping("/test/kakao")
     public String kakao() {
         String url = new StringBuilder("https://kauth.kakao.com/oauth/authorize?response_type=code")
@@ -77,6 +85,7 @@ public class TokenApiController {
         return url;
     }
 
+    @Operation(summary = "OAuth accessToken 얻기 - google")
     @GetMapping("/test/google")
     public String google(){
         String url = new StringBuilder("https://accounts.google.com/o/oauth2/v2/auth?" +
@@ -86,9 +95,41 @@ public class TokenApiController {
                 "response_type=code")
                 .append("&redirect_uri=").append(URLEncoder.encode(googleRedirectUri, StandardCharsets.UTF_8))
                 .append("&client_id=").append(googleClientId).toString();
-        return url;
 
+        return url;
     }
 
+    @Operation(summary = "동의항목 확인하기 재출력"
+            , description = "카카오 계정과 MyMap application 연결을 끊고 정보제공 동의 창이 재출력되도록하는 API")
+    @GetMapping("/test/unlink/kakao")
+    public JSONObject tempCheckUserApproval(String kakaoAccessToken) {
+        System.out.println("kakaoAccessToken = " + kakaoAccessToken);
+
+        String url = "https://kapi.kakao.com/v1/user/unlink";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.setBearerAuth(kakaoAccessToken);
+
+        HttpEntity requestEntity = new HttpEntity(headers);
+        System.out.println(requestEntity);
+
+        ResponseEntity<String> res = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
+        if (res.getStatusCode().is2xxSuccessful()) {
+            Map<String, String> map = null;
+            try {
+                map = new ObjectMapper().readValue(res.getBody(), HashMap.class);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+
+            return JSONBuilder.create()
+                    .put("id", map.get("id"))
+                    .build();
+
+        }
+
+        throw new IllegalArgumentException();
+    }
 
 }
