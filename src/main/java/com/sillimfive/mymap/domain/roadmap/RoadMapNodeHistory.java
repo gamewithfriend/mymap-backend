@@ -14,16 +14,10 @@ public class RoadMapNodeHistory {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "roadmap_id")
-    private RoadMap roadMap;
+    @JoinColumn(name = "roadmap_history_id")
+    private RoadMapHistory roadMapHistory;
 
     private int nodeOrder;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id")
-    private RoadMapNodeHistory parent;
-
-    private String content;
-    private String title;
-    private LocalDateTime editedDate;
+    private String nodeContent;
+    private String nodeTitle;
 }

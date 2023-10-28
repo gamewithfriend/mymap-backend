@@ -1,5 +1,7 @@
 package com.sillimfive.mymap.web;
 
+import com.sillimfive.mymap.web.dto.Error;
+import com.sillimfive.mymap.web.dto.MyMapResponse;
 import com.sillimfive.mymap.web.dto.ResponseEntityBody;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -13,17 +15,16 @@ import java.time.LocalDateTime;
 public class ControllerExceptionHandler {
 
     @ExceptionHandler
-    public ResponseEntity<?> handle(HttpServletRequest request, Exception e) {
+    public MyMapResponse handle(HttpServletRequest request, Exception e) {
         e.printStackTrace();
 
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ResponseEntityBody.builder()
+        return MyMapResponse.create()
+                .fail(new Error(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()))
+                .buildWith(
+                    ResponseEntityBody.builder()
                         .timestamp(LocalDateTime.now())
-                        .status(HttpStatus.INTERNAL_SERVER_ERROR.toString())
                         .path(request.getRequestURI())
                         .method(request.getMethod())
-                        .message(e.getMessage())
                         .build());
     }
 }
