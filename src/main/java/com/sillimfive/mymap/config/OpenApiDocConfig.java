@@ -2,22 +2,18 @@ package com.sillimfive.mymap.config;
 
 import com.sillimfive.mymap.common.JSONBuilder;
 import com.sillimfive.mymap.web.dto.Error;
-import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import io.swagger.v3.oas.models.media.Content;
-import io.swagger.v3.oas.models.media.MediaType;
+import io.swagger.v3.oas.models.media.*;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
-
-import java.util.HashMap;
 
 @Configuration
 @OpenAPIDefinition(
@@ -66,6 +62,18 @@ public class OpenApiDocConfig {
 //                responses.addApiResponse("200", default200);
                 responses.addApiResponse("500", default500);
             }));
+
+            // schema
+            Schema idSchema = new ObjectSchema()
+                    .name("id-schema")
+                    .title("id-schema")
+                    .description("MyMapResponse for ID response")
+                    .addProperty("error", new ObjectSchema().example(null))
+                    .addProperty("data", new NumberSchema().example(1L))
+                    .addProperty("result", new StringSchema().example("SUCCESS"));
+
+            openApi.getComponents().getSchemas()
+                    .put(idSchema.getName(), idSchema);
         };
     }
 }

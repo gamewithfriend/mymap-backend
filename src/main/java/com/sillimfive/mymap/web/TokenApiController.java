@@ -66,7 +66,7 @@ public class TokenApiController {
         }
     )
     @PostMapping("/renew")
-    public MyMapResponse createNewAccessToken(
+    public MyMapResponse<CreateAccessTokenResponse> createNewAccessToken(
             @RequestBody CreateAccessTokenRequest request
     ){
         String newAccessToken = tokenService.createNewAccessToken(request.getRefreshToken());

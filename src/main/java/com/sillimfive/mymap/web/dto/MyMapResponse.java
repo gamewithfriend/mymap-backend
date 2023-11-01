@@ -13,6 +13,8 @@ public class MyMapResponse<T> {
     private static String RESULT_FAIL = "ERROR";
 
     private Error error;
+
+    @Schema(subTypes = Object.class)
     private T data;
 
     @Schema(example = "SUCCESS")
@@ -43,8 +45,8 @@ public class MyMapResponse<T> {
             return this;
         }
 
-        public MyMapResponse<T> buildWith(@Nullable T data) {
-            return new MyMapResponse<>(error, data, result);
+        public <T> MyMapResponse<T> buildWith(@Nullable T data) {
+            return new MyMapResponse<T>(error, data, result);
         }
     }
 }
