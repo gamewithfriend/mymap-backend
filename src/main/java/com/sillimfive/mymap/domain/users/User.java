@@ -1,5 +1,7 @@
-package com.sillimfive.mymap.domain;
+package com.sillimfive.mymap.domain.users;
 
+import com.sillimfive.mymap.domain.BaseTimeEntity;
+import com.sillimfive.mymap.domain.Image;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;

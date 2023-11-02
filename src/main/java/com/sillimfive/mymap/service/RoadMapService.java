@@ -1,19 +1,17 @@
 package com.sillimfive.mymap.service;
 
-import com.sillimfive.mymap.common.JSONBuilder;
 import com.sillimfive.mymap.domain.Category;
 import com.sillimfive.mymap.domain.Image;
-import com.sillimfive.mymap.domain.ImageType;
-import com.sillimfive.mymap.domain.User;
+import com.sillimfive.mymap.domain.users.User;
 import com.sillimfive.mymap.domain.roadmap.RoadMap;
 import com.sillimfive.mymap.domain.roadmap.RoadMapTag;
 import com.sillimfive.mymap.domain.tag.Tag;
 import com.sillimfive.mymap.repository.*;
 import com.sillimfive.mymap.web.dto.roadmap.*;
+import com.sillimfive.mymap.web.dto.study.RoadMapStudyStartDto;
 import com.sillimfive.mymap.web.dto.tag.TagDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.simple.JSONObject;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -128,5 +126,17 @@ public class RoadMapService {
     public PageImpl<RoadMapResponseDto> findListBy(RoadMapSearch searchCondition, Pageable pageable) {
 
         return roadMapQuerydslRepository.searchList(searchCondition, pageable);
+    }
+
+    /**
+     *
+     * @param userId
+     * @param roadMapId
+     * @param studyStartDto
+     * @return roadMapStudy's id
+     */
+    public Long startStudy(Long userId, Long roadMapId, RoadMapStudyStartDto studyStartDto) {
+
+        return null;
     }
 }

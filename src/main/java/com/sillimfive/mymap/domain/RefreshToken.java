@@ -1,5 +1,6 @@
 package com.sillimfive.mymap.domain;
 
+import com.sillimfive.mymap.domain.users.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

@@ -1,6 +1,6 @@
 //package com.sillimfive.mymap.config.jwt;
 //
-//import com.sillimfive.mymap.domain.User;
+//import com.sillimfive.mymap.domain.users.User;
 //import com.sillimfive.mymap.repository.UserRepository;
 //import io.jsonwebtoken.Jwts;
 //import org.assertj.core.api.Assertions;

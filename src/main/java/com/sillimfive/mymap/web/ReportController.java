@@ -1,6 +1,6 @@
 package com.sillimfive.mymap.web;
 
-import com.sillimfive.mymap.domain.User;
+import com.sillimfive.mymap.domain.users.User;
 import com.sillimfive.mymap.service.ReportService;
 import com.sillimfive.mymap.web.dto.report.ReportCreateDto;
 import io.swagger.v3.oas.annotations.Operation;

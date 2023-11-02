@@ -1,13 +1,12 @@
 package com.sillimfive.mymap.domain;
 
 import com.sillimfive.mymap.domain.roadmap.RoadMapReply;
+import com.sillimfive.mymap.domain.users.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

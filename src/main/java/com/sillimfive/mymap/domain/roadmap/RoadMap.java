@@ -3,7 +3,7 @@ package com.sillimfive.mymap.domain.roadmap;
 import com.sillimfive.mymap.domain.BaseTimeEntity;
 import com.sillimfive.mymap.domain.Category;
 import com.sillimfive.mymap.domain.Image;
-import com.sillimfive.mymap.domain.User;
+import com.sillimfive.mymap.domain.users.User;
 import com.sillimfive.mymap.web.dto.roadmap.RoadMapNodeEditDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -33,12 +33,12 @@ public class RoadMap extends BaseTimeEntity {
     private List<RoadMapNode> roadMapNodes = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id")
     private User creator;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "origin_id")
+    private User origin;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
@@ -55,28 +55,33 @@ public class RoadMap extends BaseTimeEntity {
     @JoinColumn(name = "image_id")
     private Image image;
 
+    @Enumerated(EnumType.STRING)
+    private RoadMapTheme theme;
+
     private boolean deleteFlag;
 
     @Builder
-    protected RoadMap(boolean hiddenFlag, User creator, Category category, String title, String description, Image image) {
+    protected RoadMap(boolean hiddenFlag, User origin, Category category, String title, String description, Image image, RoadMapTheme theme) {
         this.hiddenFlag = hiddenFlag;
-        this.user = creator;
-        this.creator = creator;
+        this.creator = origin;
+        this.origin = origin;
         this.category = category;
         this.title = title;
         this.description = description;
         this.image = image;
+        this.theme = theme;
     }
 
-    public static RoadMap createRoadMap(User creator, Category category, String title, String description, Image image) {
+    public static RoadMap createRoadMap(User creator, Category category, String title, String description, Image image, RoadMapTheme theme) {
         Assert.hasText(title, "title must not be empty");
 
         return RoadMap.builder()
-                .creator(creator)
+                .origin(creator)
                 .category(category)
                 .title(title)
                 .description(description)
                 .image(image)
+                .theme(theme)
                 .build();
     }
 
