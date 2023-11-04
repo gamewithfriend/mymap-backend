@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sillimfive.mymap.config.jwt.TokenProvider;
 import com.sillimfive.mymap.domain.RefreshToken;
-import com.sillimfive.mymap.domain.User;
+import com.sillimfive.mymap.domain.users.User;
 import com.sillimfive.mymap.repository.RefreshTokenRepository;
 import com.sillimfive.mymap.repository.UserRepository;
 import com.sillimfive.mymap.web.dto.token.AuthenticationTokenResponse;
@@ -24,8 +24,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor

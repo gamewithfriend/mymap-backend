@@ -3,7 +3,7 @@ package com.sillimfive.mymap.config.oauth;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.sillimfive.mymap.config.oauth.dto.OAuthAttributes;
-import com.sillimfive.mymap.domain.User;
+import com.sillimfive.mymap.domain.users.User;
 import com.sillimfive.mymap.repository.UserRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;

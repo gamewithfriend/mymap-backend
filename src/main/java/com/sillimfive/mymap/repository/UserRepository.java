@@ -1,6 +1,6 @@
 package com.sillimfive.mymap.repository;
 
-import com.sillimfive.mymap.domain.User;
+import com.sillimfive.mymap.domain.users.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -10,7 +10,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.sillimfive.mymap.common.JSONBuilder;
 import com.sillimfive.mymap.domain.Image;
 import com.sillimfive.mymap.domain.ImageType;
-import com.sillimfive.mymap.domain.User;
+import com.sillimfive.mymap.domain.users.User;
 import com.sillimfive.mymap.repository.ImageRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

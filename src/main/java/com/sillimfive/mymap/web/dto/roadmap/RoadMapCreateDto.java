@@ -2,9 +2,10 @@ package com.sillimfive.mymap.web.dto.roadmap;
 
 import com.sillimfive.mymap.domain.Category;
 import com.sillimfive.mymap.domain.Image;
-import com.sillimfive.mymap.domain.User;
+import com.sillimfive.mymap.domain.users.User;
 import com.sillimfive.mymap.domain.roadmap.RoadMap;
 import com.sillimfive.mymap.domain.roadmap.RoadMapNode;
+import com.sillimfive.mymap.domain.roadmap.RoadMapTheme;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
@@ -32,6 +33,9 @@ public class RoadMapCreateDto {
     @Schema(example = "Back-end DB access skill")
     private String description;
 
+    @Schema(description = "테마", example = "DEFAULT")
+    private String theme;
+
     @ArraySchema(minItems = 1, schema = @Schema(implementation = RoadMapNodeCreateDto.class))
     private List<RoadMapNodeCreateDto> nodeDtoList = new ArrayList<>();
 
@@ -48,7 +52,15 @@ public class RoadMapCreateDto {
     @Schema(hidden = true)
     public RoadMap convert(User user, Category category, Image image) {
 
-        return RoadMap.createRoadMap(user, category, title, description, image);
+        RoadMapTheme roadMapTheme;
+        try {
+            roadMapTheme = RoadMapTheme.valueOf(theme);
+        } catch (Exception e) {
+            e.printStackTrace();
+            roadMapTheme = RoadMapTheme.DEFAULT;
+        }
+
+        return RoadMap.createRoadMap(user, category, title, description, image, roadMapTheme);
     }
 
     @Schema(hidden = true)

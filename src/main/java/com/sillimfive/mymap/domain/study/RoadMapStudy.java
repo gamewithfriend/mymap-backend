@@ -1,6 +1,7 @@
-package com.sillimfive.mymap.domain.roadmap;
+package com.sillimfive.mymap.domain.study;
 
-import com.sillimfive.mymap.domain.User;
+import com.sillimfive.mymap.domain.roadmap.RoadMap;
+import com.sillimfive.mymap.domain.users.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 

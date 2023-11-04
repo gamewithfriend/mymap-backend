@@ -1,6 +1,6 @@
 package com.sillimfive.mymap.service;
 
-import com.sillimfive.mymap.domain.User;
+import com.sillimfive.mymap.domain.users.User;
 import com.sillimfive.mymap.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

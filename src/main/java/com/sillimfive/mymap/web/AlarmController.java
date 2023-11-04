@@ -1,6 +1,6 @@
 package com.sillimfive.mymap.web;
 
-import com.sillimfive.mymap.domain.User;
+import com.sillimfive.mymap.domain.users.User;
 import com.sillimfive.mymap.service.AlarmService;
 import com.sillimfive.mymap.web.dto.alarm.AlarmDeleteDto;
 import com.sillimfive.mymap.web.dto.alarm.AlarmResponseDto;

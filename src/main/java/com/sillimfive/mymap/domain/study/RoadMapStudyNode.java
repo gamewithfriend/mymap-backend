@@ -1,4 +1,4 @@
-package com.sillimfive.mymap.domain.roadmap;
+package com.sillimfive.mymap.domain.study;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

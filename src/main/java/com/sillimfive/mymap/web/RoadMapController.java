@@ -1,6 +1,6 @@
 package com.sillimfive.mymap.web;
 
-import com.sillimfive.mymap.domain.User;
+import com.sillimfive.mymap.domain.users.User;
 import com.sillimfive.mymap.repository.CategoryRepository;
 import com.sillimfive.mymap.service.AwsS3Service;
 import com.sillimfive.mymap.service.ImageService;

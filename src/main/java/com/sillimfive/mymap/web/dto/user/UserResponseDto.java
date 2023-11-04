@@ -1,6 +1,6 @@
 package com.sillimfive.mymap.web.dto.user;
 
-import com.sillimfive.mymap.domain.User;
+import com.sillimfive.mymap.domain.users.User;
 import lombok.Builder;
 import lombok.Getter;
 

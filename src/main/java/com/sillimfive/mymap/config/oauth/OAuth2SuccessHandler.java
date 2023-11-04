@@ -2,7 +2,7 @@ package com.sillimfive.mymap.config.oauth;
 
 import com.sillimfive.mymap.config.jwt.TokenProvider;
 import com.sillimfive.mymap.domain.RefreshToken;
-import com.sillimfive.mymap.domain.User;
+import com.sillimfive.mymap.domain.users.User;
 import com.sillimfive.mymap.repository.RefreshTokenRepository;
 import com.sillimfive.mymap.service.UserService;
 import com.sillimfive.mymap.util.CookieUtil;
