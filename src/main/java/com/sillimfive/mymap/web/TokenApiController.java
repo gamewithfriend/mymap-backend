@@ -46,7 +46,7 @@ public class TokenApiController {
     @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
     private String googleRedirectUri;
 
-    @Operation(summary = "로그인 토큰 발급",
+    @Operation(summary = "토큰 발급 및 로그인 처리",
                 description = "<b>Receives tokens (accessToken, refreshToken) and userInfo</b><br>" +
                             "OAuth 인증을 통해 Authorization Server에서 받은 access 토큰과 토큰의 유형(구글/카카오)을 전달하여" +
                             "현 Application의 인증에 필요한 토큰 발급")

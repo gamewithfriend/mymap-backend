@@ -1,4 +1,4 @@
-package com.sillimfive.mymap.config.jwt;
+package com.sillimfive.mymap.config.auth.jwt;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 @Getter
 @Component
 @ConfigurationProperties("jwt")
-
 public class JwtProperties {
 
     private String issuer;

@@ -7,11 +7,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
+@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 public class ControllerExceptionHandler {
 
     @ExceptionHandler
@@ -23,6 +25,7 @@ public class ControllerExceptionHandler {
                 .buildWith(
                     ResponseEntityBody.builder()
                         .timestamp(LocalDateTime.now())
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR.toString())
                         .path(request.getRequestURI())
                         .method(request.getMethod())
                         .build());

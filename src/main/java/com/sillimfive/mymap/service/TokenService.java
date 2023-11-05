@@ -2,7 +2,7 @@ package com.sillimfive.mymap.service;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sillimfive.mymap.config.jwt.TokenProvider;
+import com.sillimfive.mymap.config.auth.jwt.TokenProvider;
 import com.sillimfive.mymap.domain.RefreshToken;
 import com.sillimfive.mymap.domain.users.User;
 import com.sillimfive.mymap.repository.RefreshTokenRepository;
@@ -24,7 +24,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Duration;
-import java.util.Optional;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -63,11 +63,10 @@ public class TokenService {
         User oAuthUser = getOauthUser(accessToken, tokenType);
         // todo - 저장 서비스, 토큰 발급 서비스  -> 이후 return spec 파싱
 
-        Optional<User> findUser = userRepository.findByEmail(oAuthUser.getEmail());
+        User user = userRepository.findByEmail(oAuthUser.getEmail())
+                    .orElseGet(() -> userRepository.save(oAuthUser));
 
-        User user = findUser.orElseGet(() -> userRepository.save(oAuthUser));
         AuthenticationTokenResponse authTokenResponse = createAuthTokenResponse(user);
-
         saveRefreshToken(user.getId(), authTokenResponse.getRefreshToken());
 
         Authentication authentication = tokenProvider.getAuthentication(authTokenResponse.getAccessToken());
@@ -121,10 +120,8 @@ public class TokenService {
 
             // todo payload 값 확인
             return getPayload(tokenType, responseEntity.getBody());
-        }else{
-            // todo 200 아닐때 에러 처리
+        } else
             throw new ResponseStatusException(responseEntity.getStatusCode());
-        }
     }
 
     private String setApiUri(String tokenType){
@@ -150,10 +147,12 @@ public class TokenService {
             objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             GooglePayload payload = objectMapper.readValue(payloadBody, GooglePayload.class);
             // todo user 객체 데이터 확인 필요 -
-            log.info("google payload : {}", payload);
+            log.debug("google payload : {}", payload);
+
             // googleinfo 객체로 받은후 user에 세팅
             return User.builder()
                     .loginId(payload.getSub())
+                    .nickName(UUID.randomUUID().toString().split("-")[0])
                     .email(payload.getEmail())
                     .build();
         }catch (Exception e){
@@ -169,9 +168,11 @@ public class TokenService {
             objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             KakaoPayload payload = objectMapper.readValue(payloadBody, KakaoPayload.class);
             // todo user 객체 데이터 확인 필요
-            log.info("kakao payload : {}", payload);
+            log.debug("kakao payload : {}", payload);
+
             return User.builder()
                     .loginId(payload.getId())
+                    .nickName(UUID.randomUUID().toString().split("-")[0])
                     .email(payload.getKakao_account().getEmail())
                     .build();
         }catch (Exception e){

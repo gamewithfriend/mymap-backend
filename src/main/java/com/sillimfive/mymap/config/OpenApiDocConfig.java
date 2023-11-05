@@ -15,6 +15,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 
+import java.util.HashMap;
+
 @Configuration
 @OpenAPIDefinition(
     info = @Info(
@@ -55,7 +57,7 @@ public class OpenApiDocConfig {
                                 new MediaType().example(
                                         JSONBuilder.create()
                                             .put("error", new Error(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"))
-                                            .put("data", null)
+                                            .put("data", new HashMap<>())
                                             .put("result", "ERROR")
                                             .build())));
 
