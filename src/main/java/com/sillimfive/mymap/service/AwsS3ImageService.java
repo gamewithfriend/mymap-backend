@@ -7,15 +7,14 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.sillimfive.mymap.common.JSONBuilder;
 import com.sillimfive.mymap.domain.Image;
 import com.sillimfive.mymap.domain.ImageType;
 import com.sillimfive.mymap.domain.users.User;
 import com.sillimfive.mymap.repository.ImageRepository;
+import com.sillimfive.mymap.web.dto.ImageResponseDto;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.simple.JSONObject;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +28,7 @@ import java.time.format.DateTimeFormatter;
 @Slf4j
 @RequiredArgsConstructor
 @Transactional
-public class AwsS3Service {
+public class AwsS3ImageService {
 
     private final AwsProperties awsProperties;
     private final ImageRepository imageRepository;
@@ -50,15 +49,19 @@ public class AwsS3Service {
                 .withRegion(region).build();
     }
 
-    public JSONObject upload(MultipartFile multipartFile, String type, Long userId) {
-        String urlPath = uploadToS3(multipartFile, type, userId);
+    public ImageResponseDto upload(MultipartFile multipartFile, String type, Long userId) {
+        validateImageType(type);
 
+        String urlPath = uploadToS3(multipartFile, type, userId);
         Image image = imageRepository.save(new Image(urlPath, ImageType.valueOf(type.toUpperCase())));
 
-        return JSONBuilder.create()
-                .put("path", image.getPath())
-                .put("imageId", image.getId())
-                .build();
+        return new ImageResponseDto(image);
+    }
+
+    private void validateImageType(String type) {
+        if (!type.equals(ImageType.ROADMAPS.toString().toLowerCase())
+            && !type.equals(ImageType.USERS.toString().toLowerCase()))
+            throw new IllegalArgumentException("이미지 업로드 시 타입은 'roadmaps' 또는 'users' 만 사용 가능합니다.");
     }
 
     private String uploadToS3(MultipartFile multipartFile, String type, Long userId) {
@@ -97,7 +100,9 @@ public class AwsS3Service {
         s3Client.deleteObject(awsProperties.getBucketName(), key);
     }
 
-    public JSONObject swap(Long imageId, String type, MultipartFile multipartFile) {
+    public ImageResponseDto swap(Long imageId, String type, MultipartFile multipartFile) {
+        validateImageType(type);
+
         Image image = imageRepository.findById(imageId)
                 .orElseThrow(() -> new IllegalArgumentException("image for " + imageId + " can't be found"));
 
@@ -113,9 +118,6 @@ public class AwsS3Service {
         String changedUrlPath = uploadToS3(multipartFile, type, user.getId());
         image.changePath(changedUrlPath);
 
-        return JSONBuilder.create()
-                .put("path", changedUrlPath)
-                .put("imageId", image.getId())
-                .build();
+        return new ImageResponseDto(image);
     }
 }

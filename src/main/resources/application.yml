@@ -58,7 +58,6 @@ springdoc:
   swagger-ui:
     enabled: true
     tags-sorter: alpha
-  #    path: /mymap-api.html
   api-docs:
     enabled: true
 

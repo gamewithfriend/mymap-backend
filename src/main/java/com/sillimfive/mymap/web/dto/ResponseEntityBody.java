@@ -15,5 +15,4 @@ public class ResponseEntityBody {
     private String status;
     private String path;
     private String method;
-    private String message;
 }

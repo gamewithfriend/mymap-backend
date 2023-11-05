@@ -25,6 +25,7 @@ public class ControllerExceptionHandler {
                 .buildWith(
                     ResponseEntityBody.builder()
                         .timestamp(LocalDateTime.now())
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR.toString())
                         .path(request.getRequestURI())
                         .method(request.getMethod())
                         .build());

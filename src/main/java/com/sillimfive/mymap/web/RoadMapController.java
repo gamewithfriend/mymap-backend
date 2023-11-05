@@ -2,8 +2,7 @@ package com.sillimfive.mymap.web;
 
 import com.sillimfive.mymap.domain.users.User;
 import com.sillimfive.mymap.repository.CategoryRepository;
-import com.sillimfive.mymap.service.AwsS3Service;
-import com.sillimfive.mymap.service.ImageService;
+import com.sillimfive.mymap.service.AwsS3ImageService;
 import com.sillimfive.mymap.service.RoadMapService;
 import com.sillimfive.mymap.web.dto.CategoryDto;
 import com.sillimfive.mymap.web.dto.MyMapResponse;
@@ -37,8 +36,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/roadmaps")
 public class RoadMapController {
 
-    private final AwsS3Service awsS3Service;
-    private final ImageService imageService;
+    private final AwsS3ImageService awsS3ImageService;
     private final RoadMapService roadMapService;
 
     private final CategoryRepository categoryRepository;
@@ -63,7 +61,7 @@ public class RoadMapController {
                     .buildWith(roadMapService.create(user.getId(), roadMapCreateDto));
 
         } catch (Exception e) {
-            awsS3Service.delete(roadMapCreateDto.getImageId());
+            awsS3ImageService.delete(roadMapCreateDto.getImageId());
 
             e.printStackTrace();
             throw new IllegalStateException("Failed to create RoadMap. so delete image for " + roadMapCreateDto.getImageId());

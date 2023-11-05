@@ -15,10 +15,10 @@
 //
 //@SpringBootTest
 //@ActiveProfiles(value = {"cloud", "maria"})
-//public class AwsS3ServiceTest {
+//public class AwsS3ImageServiceTest {
 //
 //    @Autowired
-//    AwsS3Service awsS3Service;
+//    AwsS3ImageService awsS3Service;
 //
 //    @Autowired
 //    ImageRepository imageRepository;
