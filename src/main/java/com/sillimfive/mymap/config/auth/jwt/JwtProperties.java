@@ -1,4 +1,4 @@
-package com.sillimfive.mymap.config.jwt;
+package com.sillimfive.mymap.config.auth.jwt;
 
 import lombok.Getter;
 import lombok.Setter;

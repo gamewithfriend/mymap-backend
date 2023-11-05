@@ -1,6 +1,6 @@
 package com.sillimfive.mymap.config;
 
-import com.sillimfive.mymap.config.jwt.TokenProvider;
+import com.sillimfive.mymap.config.auth.jwt.TokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

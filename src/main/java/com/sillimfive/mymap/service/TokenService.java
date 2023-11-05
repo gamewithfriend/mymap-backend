@@ -2,7 +2,7 @@ package com.sillimfive.mymap.service;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sillimfive.mymap.config.jwt.TokenProvider;
+import com.sillimfive.mymap.config.auth.jwt.TokenProvider;
 import com.sillimfive.mymap.domain.RefreshToken;
 import com.sillimfive.mymap.domain.users.User;
 import com.sillimfive.mymap.repository.RefreshTokenRepository;
