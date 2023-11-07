@@ -72,4 +72,27 @@ public class RoadMapReplyController {
                 .succeed()
                 .buildWith(new PageImpl<>(list));
     }
+
+    @Operation(summary = "댓글을 통한 기여 요청", description = "todo: implementation")
+    @PutMapping(path = "/{roadMapId}/replies/{replyId}/contribution", produces = MediaType.APPLICATION_JSON_VALUE)
+    public MyMapResponse<Long> contribute(@PathVariable("roadMapId") Long roadMapId, @PathVariable("replyId") Long replyId) {
+
+        return MyMapResponse.create()
+                .succeed()
+                .buildWith(1L);
+    }
+
+    @Operation(summary = "원작자가 댓글로 기여자 선정", description = "todo: implementation")
+    @PutMapping(path = "/{roadMapId}/replies/{replyId}/contribution/{action}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Parameter(name = "action", description = "action 값은 [approval] or [denial]")
+    public MyMapResponse<Long> actionForContribution(
+            @PathVariable("roadMapId") Long roadMapId,
+            @PathVariable("replyId") Long replyId,
+            @PathVariable("action") String action) {
+
+
+        return MyMapResponse.create()
+                .succeed()
+                .buildWith(1L);
+    }
 }

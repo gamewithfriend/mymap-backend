@@ -73,6 +73,7 @@ public class TokenProvider {
         Claims claims = getClaims(token);
         Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
 
+        // todo: refactoring
         User user = User.builder()
                 .email(claims.getSubject())
                 .id(claims.get("id",Long.class))
