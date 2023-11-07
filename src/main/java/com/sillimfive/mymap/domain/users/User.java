@@ -26,6 +26,8 @@ public class User extends BaseTimeEntity implements UserDetails {
     private Long id;
 
     private String email;
+    @Enumerated(EnumType.STRING)
+    private OAuthType oAuthType;
     private String loginId;
     private String nickName;
     private String userState; // 코드테이블 에서 관리 - user01 (일반), user02 (휴면)....
@@ -36,8 +38,7 @@ public class User extends BaseTimeEntity implements UserDetails {
     private Image image;
 
     @Builder
-    public User(Long id, String email, String loginId, String nickName, String userState, LocalDateTime lastLogin) {
-        this.id = id;
+    public User(String email, String loginId, String nickName, String userState, LocalDateTime lastLogin) {
         this.email = email;
         this.loginId = loginId;
         this.nickName = nickName;
