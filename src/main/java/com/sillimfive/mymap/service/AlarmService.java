@@ -1,18 +1,18 @@
 package com.sillimfive.mymap.service;
 
 import com.sillimfive.mymap.domain.Alarm;
+import com.sillimfive.mymap.domain.roadmap.RoadMapLike;
+import com.sillimfive.mymap.domain.roadmap.RoadMapReply;
 import com.sillimfive.mymap.domain.users.User;
-import com.sillimfive.mymap.repository.AlarmQuerydslRepository;
-import com.sillimfive.mymap.repository.AlarmRepository;
-import com.sillimfive.mymap.repository.CodeRepository;
-import com.sillimfive.mymap.repository.UserRepository;
+import com.sillimfive.mymap.repository.*;
 import com.sillimfive.mymap.web.dto.alarm.AlarmResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,30 +23,21 @@ public class AlarmService {
 
     private final AlarmRepository alarmRepository;
     private final AlarmQuerydslRepository alarmQuerydslRepository;
-    private final CodeRepository codeRepository;
-    private final UserRepository userRepository;
+    private final RoadMapReplyRepository roadMapReplyRepository;
+    private final RoadMapLikeRepository roadMapLikeRepository;
 
-    public Long create(String alarmType, User user) {
-
-        Alarm alarm = Alarm.createAlarm(alarmType, false, false, user);
+    public Long create(String alarmType, User user,Long roadMapReplyId, Long roadMapLikeId) {
+        RoadMapReply roadMapReply = roadMapReplyRepository.findById(roadMapReplyId).get();
+        RoadMapLike roadMapLike = roadMapLikeRepository.findById(roadMapLikeId).get();
+        Alarm alarm = Alarm.createAlarm(alarmType, false, false, user,roadMapReply,roadMapLike);
         alarm = alarmRepository.save(alarm);
         return alarm.getId();
     }
 
-    public List<AlarmResponseDto> findUserAlarmList(Long userId) {
-        List<Alarm> alarmList = alarmQuerydslRepository.findByUserIdAlarm(userId);
-        List<AlarmResponseDto> alarmResponseDtoList = new ArrayList<>();
-
-        for (int i=0; i<alarmList.size(); i++ ){
-            AlarmResponseDto alarmResponseDto = new AlarmResponseDto(alarmList.get(i));
-            alarmResponseDtoList.add(alarmResponseDto);
-        }
-        return alarmResponseDtoList;
-    }
-
-    public Long countNotReadAlarm(Long userId) {
-        Long countNotReadAlarmNumber = alarmQuerydslRepository.countNotReadAlarm(userId);
-        return countNotReadAlarmNumber;
+    public PageImpl<AlarmResponseDto> findUserAlarmList(Long userId, String userNickName, Pageable pageable,boolean readFlag) {
+        userNickName ="SSSS";
+        PageImpl<AlarmResponseDto>  alarmList= alarmQuerydslRepository.findByUserIdAlarm(userId, userNickName, pageable,readFlag);
+        return alarmList;
     }
 
     public void deleteAlarmList(List<Long> alarmList){

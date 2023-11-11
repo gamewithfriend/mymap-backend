@@ -1,9 +1,11 @@
 package com.sillimfive.mymap.service;
 
 import com.sillimfive.mymap.domain.Alarm;
+import com.sillimfive.mymap.domain.Category;
+import com.sillimfive.mymap.domain.roadmap.RoadMap;
+import com.sillimfive.mymap.domain.roadmap.RoadMapLike;
 import com.sillimfive.mymap.domain.users.User;
-import com.sillimfive.mymap.repository.AlarmRepository;
-import com.sillimfive.mymap.repository.UserRepository;
+import com.sillimfive.mymap.repository.*;
 import com.sillimfive.mymap.web.dto.alarm.AlarmResponseDto;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -12,20 +14,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-@Transactional
 @ActiveProfiles(value = {"oauth"})
 public class AlarmServiceTest {
 
@@ -38,6 +37,27 @@ public class AlarmServiceTest {
     @Autowired
     AlarmService alarmService;
 
+    @Autowired
+    CodeRepository codeRepository;
+
+    @Autowired
+    RoadMapReplyRepository roadMapReplyRepository;
+
+    @Autowired
+    RoadMapLikeRepository roadMapLikeRepository;
+
+    @Autowired
+    CategoryRepository categoryRepository;
+
+    @Autowired
+    ImageRepository imageRepository;
+
+    @Autowired
+    RoadMapService roadMapService;
+
+    @Autowired
+    RoadMapRepository roadMapRepository;
+
     @PersistenceContext
     EntityManager em;
 
@@ -48,19 +68,28 @@ public class AlarmServiceTest {
                 .nickName(UUID.randomUUID() + "test")
                 .build();
         userRepository.save(user);
+        categoryRepository.save(new Category(UUID.randomUUID() + "백엔드"));
         em.flush();
         em.clear();
     }
 
     @Test
     @DisplayName("알람 생성")
-    @Rollback(true)
+    @Rollback(false)
     void create() {
 
         User userTest = userRepository.findAll().stream().findAny().get();
+        Long roadMapTestId = 1L;
+        RoadMap roadMap = roadMapRepository.findById(roadMapTestId).get();
 
+        RoadMapLike roadMapLikeTest = RoadMapLike.builder()
+                .user(userTest)
+                .roadMap(roadMap)
+                .build();
+
+        Long roadMapLikeTestTd = roadMapLikeTest.getId();
         //when
-        Long alarmId = alarmService.create("alram01",userTest);
+        Long alarmId = alarmService.create("alram01",userTest,null,roadMapLikeTestTd);
         Optional<Alarm> findOne = alarmRepository.findById(alarmId);
 
         //then
@@ -73,33 +102,35 @@ public class AlarmServiceTest {
     @Test
     @DisplayName("유저 알람 리스트 조회")
     @Rollback(true)
-    void selectUserAlarmList() {
+    void selectUserAlarmList(Pageable pageable) {
+
+
 
         User userTest = userRepository.findAll().stream().findAny().get();
-        Long alarmId1 = alarmService.create("alram01",userTest);
-        Long alarmId2 = alarmService.create("alram02",userTest);
-        Long alarmId3 = alarmService.create("alram03",userTest);
-        Long alarmId4 = alarmService.create("alram04",userTest);
+        Long alarmId1 = alarmService.create("alram01",userTest,null,null);
+        Long alarmId2 = alarmService.create("alram02",userTest,null,null);
+        Long alarmId3 = alarmService.create("alram03",userTest,null,null);
+        Long alarmId4 = alarmService.create("alram04",userTest,null,null);
 
 
         //when
-        List<AlarmResponseDto> userAlarmList = alarmService.findUserAlarmList(userTest.getId());
+        PageImpl<AlarmResponseDto> userAlarmList = alarmService.findUserAlarmList(userTest.getId(), userTest.getNickName(), pageable,false);
 
         //then
-        assertThat(userAlarmList.size()).isEqualTo(4);
+        assertThat(userAlarmList.stream().count()).isEqualTo(4);
 
     }
 
     @Test
     @DisplayName("유저 알람 삭제")
     @Rollback(true)
-    void deleteUserAlarmList() {
+    void deleteUserAlarmList(Pageable pageable) {
 
         User userTest = userRepository.findAll().stream().findAny().get();
-        Long alarmId1 = alarmService.create("alram01",userTest);
-        Long alarmId2 = alarmService.create("alram02",userTest);
-        Long alarmId3 = alarmService.create("alram03",userTest);
-        Long alarmId4 = alarmService.create("alram04",userTest);
+        Long alarmId1 = alarmService.create("alram01",userTest,null,null);
+        Long alarmId2 = alarmService.create("alram02",userTest,null,null);
+        Long alarmId3 = alarmService.create("alram03",userTest,null,null);
+        Long alarmId4 = alarmService.create("alram04",userTest,null,null);
 
         List<Long> deleteAlarmList = new ArrayList<Long>();
 
@@ -112,15 +143,15 @@ public class AlarmServiceTest {
 
 
         //then
-        List<AlarmResponseDto> userAlarmList = alarmService.findUserAlarmList(userTest.getId());
-        assertThat(userAlarmList.size()).isEqualTo(2);
+        PageImpl<AlarmResponseDto> userAlarmList = alarmService.findUserAlarmList(userTest.getId(), "", pageable,false);
+        assertThat(userAlarmList.stream().count()).isEqualTo(2);
 
     }
 
     @Test
     @DisplayName("알람 읽기")
     @Rollback(true)
-    void readAlarm() {
+    void readAlarm(Pageable pageable) {
 
         User userTest = userRepository.findAll().stream().findAny().get();
         Long userTestId = userTest.getId();
@@ -130,31 +161,7 @@ public class AlarmServiceTest {
 
 
         //then
-        List<AlarmResponseDto> userAlarmList = alarmService.findUserAlarmList(userTest.getId());
-        Long notReadAlarmNumber = alarmService.countNotReadAlarm(userTest.getId());
-        assertThat(notReadAlarmNumber).isEqualTo(0);
 
     }
 
-
-    @Test
-    @DisplayName("유저 읽지않은 알람 수")
-    @Rollback(true)
-    void countNotReadAlarm() {
-
-        User userTest = userRepository.findAll().stream().findAny().get();
-        Long alarmId1 = alarmService.create("alram01",userTest);
-        Long alarmId2 = alarmService.create("alram02",userTest);
-        Long alarmId3 = alarmService.create("alram03",userTest);
-        Long alarmId4 = alarmService.create("alram04",userTest);
-
-
-        //when
-        Long notReadAlarmNumber = alarmService.countNotReadAlarm(userTest.getId());
-
-
-        //then
-        assertThat(notReadAlarmNumber).isEqualTo(4);
-
-    }
 }

@@ -3,9 +3,13 @@ package com.sillimfive.mymap.domain.roadmap;
 import com.sillimfive.mymap.domain.BaseTimeEntity;
 import com.sillimfive.mymap.domain.users.User;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class RoadMapReply extends BaseTimeEntity {
 
@@ -32,4 +36,22 @@ public class RoadMapReply extends BaseTimeEntity {
     private ReplyStatus replyStatus;
 
     private boolean deleteFlag;
+
+    @Builder
+    protected RoadMapReply(User user,RoadMap roadMap,String content,ReplyStatus replyStatus){
+        this.user = user;
+        this.roadMap = roadMap;
+        this.content = content;
+        this.replyStatus = replyStatus;
+    }
+
+    public static RoadMapReply createRoadMapReply(User user,RoadMap roadMap,String content,ReplyStatus replyStatus) {
+
+        return RoadMapReply.builder()
+                .user(user)
+                .roadMap(roadMap)
+                .content(content)
+                .replyStatus(replyStatus)
+                .build();
+    }
 }
