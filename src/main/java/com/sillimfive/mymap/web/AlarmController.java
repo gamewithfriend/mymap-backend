@@ -2,15 +2,18 @@ package com.sillimfive.mymap.web;
 
 import com.sillimfive.mymap.domain.users.User;
 import com.sillimfive.mymap.service.AlarmService;
+import com.sillimfive.mymap.web.dto.MyMapResponse;
 import com.sillimfive.mymap.web.dto.alarm.AlarmDeleteDto;
 import com.sillimfive.mymap.web.dto.alarm.AlarmResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,49 +29,47 @@ public class AlarmController {
 
     private final AlarmService alarmService;
 
-    @Operation(summary = "유저 알람 리스트 조회", description = "Get the User Alarm List")
+    @Parameter(name = "pageable", hidden = true)
+    @Operation(summary = "유저 알람 리스트 조회 (readFlag 파라미터로 읽은 안읽은 리스트 구분조회) 총 갯수 포함", description = "Get the User Alarm List and Count",
+            parameters = {
+                    @Parameter(name = "page", example = "0"),
+                    @Parameter(name = "size", example = "10"),
+                    @Parameter(name = "readFlag", example = "false: 안읽음, true: 읽음")
+            }
+    )
     @GetMapping
-    public ResponseEntity<?> findUserAlarmList(Authentication authentication) {
-        JSONObject json = new JSONObject();
+    public MyMapResponse<PageImpl<AlarmResponseDto>> findUserAlarmList(Authentication authentication, Pageable pageable, @RequestParam boolean readFlag) {
         User user = (User) authentication.getPrincipal();
         Long userId = user.getId();
-        List<AlarmResponseDto> userAlarmList = alarmService.findUserAlarmList(userId);
-        json.put("userAlarmList",userAlarmList);
-        json.put("data",json.get("userAlarmList"));
-        json.put("result",json.get("data"));
-        return ResponseEntity.ok(json);
-    }
+        String userNickName = user.getNickName();
+        PageImpl<AlarmResponseDto> userAlarmList = alarmService.findUserAlarmList(userId, userNickName, pageable,readFlag);
 
-    @Operation(summary = "유저 읽지 않은 알람 갯수 조회", description = "Get the User unRead Alarm Count")
-    @GetMapping("/count")
-    public ResponseEntity<?> countNotReadAlarm(Authentication authentication) {
-        JSONObject json = new JSONObject();
-        User user = (User) authentication.getPrincipal();
-        Long userId = user.getId();
-        Long unReadAlarmCount = alarmService.countNotReadAlarm(userId);
-        json.put("unReadAlarmCount",unReadAlarmCount);
-        json.put("data",json.get("unReadAlarmCount"));
-        json.put("result",json.get("data"));
-        return ResponseEntity.ok(json);
+        return MyMapResponse.create()
+                .succeed()
+                .buildWith(userAlarmList);
     }
 
     @Operation(summary = "유저 알람 읽기처리", description = "User read Alarm ")
     @PutMapping
-    public ResponseEntity<?> readAlarm(Authentication authentication) {
+    public MyMapResponse<Long> readAlarm(Authentication authentication) {
         JSONObject json = new JSONObject();
         User user = (User) authentication.getPrincipal();
         Long userId = user.getId();
         alarmService.readAlarm(userId);
-        return ResponseEntity.ok(json);
+        return MyMapResponse.create()
+                .succeed()
+                .buildWith(userId);
     }
 
     @Operation(summary = "유저 알람 삭제", description = "User delete Alarm ")
     @DeleteMapping
-    public ResponseEntity<?> deleteAlarm(@RequestBody AlarmDeleteDto alarmDeleteDto) {
+    public MyMapResponse<List<Long>> deleteAlarm(@RequestBody AlarmDeleteDto alarmDeleteDto) {
         JSONObject json = new JSONObject();
         List<Long> alarmList = alarmDeleteDto.getAlarmList();
         alarmService.deleteAlarmList(alarmList);
-        return ResponseEntity.ok(json);
+        return MyMapResponse.create()
+                .succeed()
+                .buildWith(alarmList);
     }
 
 }

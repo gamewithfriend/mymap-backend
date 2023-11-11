@@ -1,5 +1,6 @@
 package com.sillimfive.mymap.domain;
 
+import com.sillimfive.mymap.domain.roadmap.RoadMapLike;
 import com.sillimfive.mymap.domain.roadmap.RoadMapReply;
 import com.sillimfive.mymap.domain.users.User;
 import jakarta.persistence.*;
@@ -26,25 +27,33 @@ public class Alarm extends BaseTimeEntity {
     @JoinColumn(name = "reply_id")
     private RoadMapReply roadMapReply;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "like_id")
+    private RoadMapLike roadMapLike;
+
     private String alarmType;
     private boolean deleteFlag;
     private boolean readFlag;
 
     @Builder
-    protected Alarm(String alarmType, boolean deleteFlag, boolean readFlag, User user){
+    protected Alarm(String alarmType, boolean deleteFlag, boolean readFlag, User user,RoadMapReply roadMapReply,RoadMapLike roadMapLike ){
         this.alarmType = alarmType;
         this.deleteFlag = deleteFlag;
         this.readFlag = readFlag;
         this.user = user;
+        this.roadMapReply = roadMapReply;
+        this.roadMapLike = roadMapLike;
     }
 
-    public static Alarm createAlarm(String alarmType, boolean deleteFlag, boolean readFlag, User user) {
+    public static Alarm createAlarm(String alarmType, boolean deleteFlag, boolean readFlag, User user,RoadMapReply roadMapReply,RoadMapLike roadMapLike) {
 
         return Alarm.builder()
                 .alarmType(alarmType)
                 .deleteFlag(deleteFlag)
                 .readFlag(readFlag)
                 .user(user)
+                .roadMapReply(roadMapReply)
+                .roadMapLike(roadMapLike)
                 .build();
     }
 }

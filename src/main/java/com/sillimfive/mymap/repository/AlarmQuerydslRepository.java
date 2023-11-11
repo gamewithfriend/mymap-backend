@@ -1,15 +1,17 @@
 package com.sillimfive.mymap.repository;
 
-import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sillimfive.mymap.domain.Alarm;
+import com.sillimfive.mymap.web.dto.alarm.AlarmResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.sillimfive.mymap.domain.QAlarm.alarm;
+import static com.sillimfive.mymap.domain.QCode.code;
 
 @Repository
 @RequiredArgsConstructor
@@ -17,32 +19,32 @@ public class AlarmQuerydslRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public List<Alarm> findByUserIdAlarm(Long userId) {
-        List<Alarm> result = queryFactory
-                .select(alarm)
-                .from(alarm)
-                .where(
-                        alarm.user.id.eq(userId)
-                                .and(alarm.deleteFlag.eq(false))
-                      )
+    public PageImpl<AlarmResponseDto> findByUserIdAlarm(Long userId, String userNickName, Pageable pageable, boolean readFlag) {
+
+        List<AlarmResponseDto> resultList = queryFactory
+                .select(Projections.fields(AlarmResponseDto.class,
+                        alarm.id,
+                        alarm.readFlag,
+                        code.description.prepend(userNickName).as("content")
+                        ))
+                        .from(alarm,code)
+                        .where(alarm.alarmType.eq(code.id),alarm.readFlag.eq(readFlag))
                 .orderBy(alarm.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
 
-        return result;
-    }
-
-    public Long countNotReadAlarm(Long userId) {
-
-        Long countNotReadAlarmNumber = queryFactory
+        Long countAlarmNumber = queryFactory
                 .select(alarm.count())
                 .from(alarm)
                 .where(
                         alarm.user.id.eq(userId)
                                 .and(alarm.deleteFlag.eq(false))
-                                .and(alarm.readFlag.eq(false))
+                                .and(alarm.readFlag.eq(readFlag))
                 )
                 .fetchOne();
-        return countNotReadAlarmNumber;
+
+        return new PageImpl<>(resultList,pageable,countAlarmNumber);
     }
 
     public void deleteAlarm(List<Long> alarmIdList) {
@@ -63,6 +65,7 @@ public class AlarmQuerydslRepository {
                 .execute();
 
     }
+
 
 
 }

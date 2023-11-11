@@ -29,10 +29,7 @@ public class ReportController {
         JSONObject json = new JSONObject();
         User user = (User) authentication.getPrincipal();
         Long reporterId = user.getId();
-        Long roadMapId = reportCreateDto.getId();
-        String reportType = reportCreateDto.getReportType();
-        String content = reportCreateDto.getContent();
-        reportService.create(content, reportType, roadMapId, reporterId);
+        reportService.create(reporterId, reportCreateDto);
         return ResponseEntity.ok(json);
     }
 
