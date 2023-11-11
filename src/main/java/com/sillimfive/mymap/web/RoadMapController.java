@@ -77,6 +77,15 @@ public class RoadMapController {
                 .buildWith(roadMapService.findById(roadMapId));
     }
 
+    @Operation(summary = "로드맵 포크", description = "todo: implementation")
+    @GetMapping(path = "/{id}/fork", produces = MediaType.APPLICATION_JSON_VALUE)
+    public MyMapResponse<Long> fork() {
+
+        return MyMapResponse.create()
+                .succeed()
+                .buildWith(1L);
+    }
+
     @Operation(summary = "로드맵 수정", description = "Edit the roadmap (desc)")
     @PutMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public MyMapResponse<Long> edit(

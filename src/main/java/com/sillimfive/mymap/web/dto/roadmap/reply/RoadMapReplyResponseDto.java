@@ -14,8 +14,9 @@ public class RoadMapReplyResponseDto {
     @Schema(nullable = true)
     private Long parentId;
     private UserDto userDto;
-    @Schema(example = "공부하기 싫어요...ㅠㅠ")
+    @Schema(example = "최고의 로드맵이네요 !!")
     private String content;
+    @Schema(description = "DEFAULT, CONTRIBUTE or WAIT - 기본, 기여, 대기")
     private ReplyStatus replyStatus;
 
     private LocalDateTime createdDate;
