@@ -25,7 +25,13 @@ public class AlarmQuerydslRepository {
                 .select(Projections.fields(AlarmResponseDto.class,
                         alarm.id,
                         alarm.readFlag,
-                        code.description.prepend(userNickName).as("content")
+                        code.description.prepend(userNickName).as("content"),
+                        alarm.alarmType,
+                        alarm.alarmType
+                                .when("alarm01").then(alarm.roadMapReply.id)
+                                .when("alarm02").then(alarm.roadMapLike.id)
+                                .otherwise(alarm.id)
+                                .as("targetId")
                         ))
                         .from(alarm,code)
                         .where(alarm.alarmType.eq(code.id),alarm.readFlag.eq(readFlag))
