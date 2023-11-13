@@ -2,10 +2,10 @@ package com.sillimfive.mymap.web.dto.roadmap;
 
 import com.sillimfive.mymap.domain.Category;
 import com.sillimfive.mymap.domain.Image;
-import com.sillimfive.mymap.domain.users.User;
 import com.sillimfive.mymap.domain.roadmap.RoadMap;
 import com.sillimfive.mymap.domain.roadmap.RoadMapNode;
 import com.sillimfive.mymap.domain.roadmap.RoadMapTheme;
+import com.sillimfive.mymap.domain.users.User;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
@@ -43,11 +43,8 @@ public class RoadMapCreateDto {
     @Schema(example = "1")
     private Long categoryId;
 
-    @ArraySchema(schema = @Schema(example = "1"))
-    private List<@Min(value = 1) Long> tagIds;
-
     @ArraySchema(schema = @Schema(example = "jpa"))
-    private List<@NotBlank String> newTags;
+    private List<@NotBlank String> tags;
 
     @Schema(hidden = true)
     public RoadMap convert(User user, Category category, Image image) {

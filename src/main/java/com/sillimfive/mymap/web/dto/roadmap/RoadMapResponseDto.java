@@ -21,7 +21,7 @@ public class RoadMapResponseDto {
         this.id = roadMap.getId();
         this.title = roadMap.getTitle();
         this.description = roadMap.getDescription();
-        this.categoryDto = new CategoryDto(roadMap.getCategory().getId(), roadMap.getCategory().getName());
+        this.categoryDto = new CategoryDto(roadMap.getCategory().getId(), roadMap.getCategory().getName(), roadMap.getCategory().getParent().getId());
         this.imagePath = roadMap.getImage().getPath();
     }
 }
