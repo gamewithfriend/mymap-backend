@@ -24,17 +24,14 @@ public class RoadMapEditDto {
     @Min(value = 1)
     private Long categoryId;
 
-    @ArraySchema(schema = @Schema(example = "1"))
-    private List<@Min(value = 1) Long> roadMapTagIds;
-
     @ArraySchema(schema = @Schema(example = "jpa"))
-    private List<@NotBlank String> newTags;
+    private List<@NotBlank String> tags;
 
     @ArraySchema(minItems = 1, schema = @Schema(implementation = RoadMapNodeEditDto.class))
     private List<RoadMapNodeEditDto> nodeDtoList;
 
     @Schema(hidden = true)
     public boolean hasNewTags() {
-        return newTags != null && !newTags.isEmpty();
+        return tags != null && !tags.isEmpty();
     }
 }

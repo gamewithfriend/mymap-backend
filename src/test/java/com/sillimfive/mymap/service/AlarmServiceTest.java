@@ -68,7 +68,7 @@ public class AlarmServiceTest {
                 .nickName(UUID.randomUUID() + "test")
                 .build();
         userRepository.save(user);
-        categoryRepository.save(new Category(UUID.randomUUID() + "백엔드"));
+        categoryRepository.save(new Category(UUID.randomUUID() + "백엔드", null));
         em.flush();
         em.clear();
     }

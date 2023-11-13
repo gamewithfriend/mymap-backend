@@ -1,13 +1,14 @@
 package com.sillimfive.mymap.service;
 
-import com.sillimfive.mymap.domain.*;
+import com.sillimfive.mymap.domain.Category;
+import com.sillimfive.mymap.domain.Image;
+import com.sillimfive.mymap.domain.ImageType;
 import com.sillimfive.mymap.domain.users.User;
 import com.sillimfive.mymap.repository.*;
 import com.sillimfive.mymap.web.dto.roadmap.RoadMapCreateDto;
 import com.sillimfive.mymap.web.dto.roadmap.RoadMapNodeCreateDto;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import org.json.simple.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,10 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @Transactional
@@ -77,7 +74,7 @@ public class ReportServiceTest {
                 .nickName("reporter")
                 .build();
         userRepository.save(reporter);
-        categoryRepository.save(new Category("백엔드"));
+        categoryRepository.save(new Category("백엔드", null));
         ImageType imageType = ImageType.ROADMAPS;
         imageRepository.save(new Image("/home/ubuntu/temp", imageType));
 
@@ -98,7 +95,7 @@ public class ReportServiceTest {
         );
         createDto.setNodeDtoList(roadMapNodeDtoList);
         createDto.setCategoryId(categoryId);
-        createDto.setNewTags(newTags);
+        createDto.setTags(newTags);
         createDto.setImageId(imageId);
 //        JSONObject jsonObject = roadMapService.create(userId, createDto);
 //        Long roadMapId =  (Long) jsonObject.get("id");
@@ -115,6 +112,4 @@ public class ReportServiceTest {
 //        Report report = findOne.get();
 //        assertThat(report.getContent()).isEqualTo("신고합니다.");
     }
-
-
 }

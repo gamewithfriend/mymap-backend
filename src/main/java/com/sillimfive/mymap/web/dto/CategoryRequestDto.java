@@ -1,18 +1,14 @@
 package com.sillimfive.mymap.web.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter @Setter
+@Data
 @AllArgsConstructor
-public class CategoryDto {
-    @Min(value = 1)
-    private Long id;
+public class CategoryRequestDto {
     @Schema(example = "백엔드")
     private String name;
-    @Schema(example = "1", nullable = true)
+    @Schema(example = "null", nullable = true)
     private Long parentId;
 }

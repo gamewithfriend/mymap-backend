@@ -1,10 +1,11 @@
 package com.sillimfive.mymap.web;
 
 import com.sillimfive.mymap.domain.users.User;
-import com.sillimfive.mymap.repository.CategoryRepository;
 import com.sillimfive.mymap.service.AwsS3ImageService;
+import com.sillimfive.mymap.service.CategoryService;
 import com.sillimfive.mymap.service.RoadMapService;
 import com.sillimfive.mymap.web.dto.CategoryDto;
+import com.sillimfive.mymap.web.dto.CategorySearch;
 import com.sillimfive.mymap.web.dto.MyMapResponse;
 import com.sillimfive.mymap.web.dto.roadmap.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,13 +20,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Tag(name = "RoadMap", description = "road map API")
@@ -39,16 +38,16 @@ public class RoadMapController {
     private final AwsS3ImageService awsS3ImageService;
     private final RoadMapService roadMapService;
 
-    private final CategoryRepository categoryRepository;
+    private final CategoryService categoryService;
 
     @Operation(summary = "로드맵 생성", description = "Create a roadmap (desc)")
     @ApiResponses(value =
         @ApiResponse(
-            responseCode = "201", description = "Created (생성된 로드맵 아이디 반환)", content =
+            responseCode = "200", description = "Created (생성된 로드맵 아이디 반환)", content =
             @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema =
             @Schema(ref = "#/components/schemas/id-schema")))
     )
-    @ResponseStatus(HttpStatus.CREATED)
+//    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public MyMapResponse<Long> create(@RequestBody RoadMapCreateDto roadMapCreateDto, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
@@ -114,15 +113,12 @@ public class RoadMapController {
                 .buildWith(roadMapService.findListBy(roadMapSearch, pageable));
     }
 
-    @Operation(summary = "로드맵 카테고리 목록 조회")
+    @Operation(summary = "로드맵 카테고리 목록 조회", description = "카테고리 목록 조회시 <br>{\"rootFlag\": true} 또는 {\"rootFlag\": false, \"parentId\": 1}")
     @GetMapping(path = "/categories", produces = MediaType.APPLICATION_JSON_VALUE)
-    public MyMapResponse<List<CategoryDto>> categories() {
-        List<CategoryDto> data = categoryRepository.findAll().stream()
-                .map(c -> new CategoryDto(c.getId(), c.getName()))
-                .collect(Collectors.toList());
+    public MyMapResponse<List<CategoryDto>> categories(CategorySearch categorySearch) {
 
         return MyMapResponse.create()
                 .succeed()
-                .buildWith(data);
+                .buildWith(categoryService.findBy(categorySearch));
     }
 }

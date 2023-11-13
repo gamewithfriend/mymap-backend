@@ -38,5 +38,4 @@ public class RoadMapLike {
                 .roadMap(roadMap)
                 .build();
     }
-
 }
