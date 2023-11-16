@@ -27,8 +27,14 @@ public class AlarmService {
     private final RoadMapLikeRepository roadMapLikeRepository;
 
     public Long create(String alarmType, User user,Long roadMapReplyId, Long roadMapLikeId) {
-        RoadMapReply roadMapReply = roadMapReplyRepository.findById(roadMapReplyId).get();
-        RoadMapLike roadMapLike = roadMapLikeRepository.findById(roadMapLikeId).get();
+        RoadMapReply roadMapReply =null;
+        RoadMapLike roadMapLike =null;
+        if(roadMapReplyId != null){
+             roadMapReply = roadMapReplyRepository.findById(roadMapReplyId).get();
+        }else {
+             roadMapLike = roadMapLikeRepository.findById(roadMapLikeId).get();
+        }
+
         Alarm alarm = Alarm.createAlarm(alarmType, false, false, user,roadMapReply,roadMapLike);
         alarm = alarmRepository.save(alarm);
         return alarm.getId();

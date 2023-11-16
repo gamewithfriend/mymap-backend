@@ -34,7 +34,7 @@ public class AlarmQuerydslRepository {
                                 .as("targetId")
                         ))
                         .from(alarm,code)
-                        .where(alarm.alarmType.eq(code.id),alarm.readFlag.eq(readFlag))
+                        .where(alarm.alarmType.eq(code.id),alarm.readFlag.eq(readFlag), alarm.deleteFlag.eq(false))
                 .orderBy(alarm.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
