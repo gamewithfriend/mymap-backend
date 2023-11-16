@@ -8,6 +8,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+import org.springframework.lang.Nullable;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,10 +26,12 @@ public class Alarm extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Nullable
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reply_id")
     private RoadMapReply roadMapReply;
 
+    @Nullable
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "like_id")
     private RoadMapLike roadMapLike;

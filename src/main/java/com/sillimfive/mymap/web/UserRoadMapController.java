@@ -1,8 +1,11 @@
 package com.sillimfive.mymap.web;
 
 import com.sillimfive.mymap.domain.users.User;
+import com.sillimfive.mymap.service.RoadMapLikeService;
 import com.sillimfive.mymap.service.RoadMapService;
 import com.sillimfive.mymap.web.dto.MyMapResponse;
+import com.sillimfive.mymap.web.dto.roadmap.RoadMapLikeRequestDto;
+import com.sillimfive.mymap.web.dto.roadmap.RoadMapLikeResponseDto;
 import com.sillimfive.mymap.web.dto.roadmap.RoadMapResponseDto;
 import com.sillimfive.mymap.web.dto.roadmap.RoadMapSearch;
 import com.sillimfive.mymap.web.dto.study.MemoDto;
@@ -32,7 +35,7 @@ import java.util.List;
 public class UserRoadMapController {
 
     private final RoadMapService roadMapService;
-
+    private final RoadMapLikeService roadMapLikeService;
     @Operation(summary = "로드맵 학습하기", description = "Start to study the roadmap (desc)")
     @PostMapping(path = "/study/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public MyMapResponse<Long> create(@PathVariable("id") Long roadMapId, @RequestBody RoadMapStudyStartDto studyStartDto, Authentication authentication) {
@@ -101,12 +104,15 @@ public class UserRoadMapController {
     }
 
 
-    @Operation(summary = "roadMap like", description = "todo: implementation")
+    @Operation(summary = "로드맵 좋아요 처리", description = "이미 좋아요 눌렀을경우 삭제 아니면 등록")
     @PutMapping(path = "/like/{roadMapId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public MyMapResponse<Long> like(@PathVariable("roadMapId") Long id, Authentication authentication) {
+    public MyMapResponse<RoadMapLikeResponseDto> like(@PathVariable("roadMapId") Long id, Authentication authentication) {
 
+        User likeUser = (User) authentication.getPrincipal();
+        Long roadMapLikeId = roadMapLikeService.CreateOrDelete(likeUser, id);
+        RoadMapLikeResponseDto roadMapLikeResponseDto = new RoadMapLikeResponseDto(roadMapLikeId);
         return MyMapResponse.create()
                 .succeed()
-                .buildWith(1L);
+                .buildWith(roadMapLikeResponseDto);
     }
 }

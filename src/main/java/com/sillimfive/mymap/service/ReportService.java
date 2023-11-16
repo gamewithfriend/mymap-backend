@@ -33,7 +33,7 @@ public class ReportService {
         RoadMap roadMap = null;
         RoadMapReply roadMapReply = null;
         switch (reportType){
-            case "report01": roadMap = roadMapRepository.getReferenceById(reporterId);
+            case "report01": roadMap = roadMapRepository.getReferenceById(reportTargetId);
             case "report02": roadMapReply = roadMapReplyRepository.getReferenceById(reportTargetId);
         }
 
