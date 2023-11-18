@@ -24,7 +24,7 @@ public class RoadMapLikeService {
     private final UserRepository userRepository;
     private final AlarmService alarmService;
 
-    public Long CreateOrDelete(User user, Long roadMapId) {
+    public Long createOrDelete(User user, Long roadMapId) {
         Long userId = user.getId();
         Long roadMapLikeId = roadMapLikeQuerydslRepository.findByRoadMapIdRoadMapLike(userId, roadMapId);
         RoadMap roadMap = roadMapRepository.getReferenceById(roadMapId);
