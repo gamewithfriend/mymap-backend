@@ -3,13 +3,14 @@ package com.sillimfive.mymap.web;
 import com.sillimfive.mymap.domain.users.User;
 import com.sillimfive.mymap.service.RoadMapLikeService;
 import com.sillimfive.mymap.service.RoadMapService;
+import com.sillimfive.mymap.service.RoadMapStudyService;
 import com.sillimfive.mymap.web.dto.MyMapResponse;
+import com.sillimfive.mymap.web.dto.roadmap.RoadMapCopyDto;
 import com.sillimfive.mymap.web.dto.roadmap.RoadMapLikeResponseDto;
 import com.sillimfive.mymap.web.dto.roadmap.RoadMapResponseDto;
 import com.sillimfive.mymap.web.dto.roadmap.RoadMapSearch;
 import com.sillimfive.mymap.web.dto.study.MemoDto;
 import com.sillimfive.mymap.web.dto.study.RoadMapStudyDetailDto;
-import com.sillimfive.mymap.web.dto.study.RoadMapStudyStartDto;
 import com.sillimfive.mymap.web.dto.study.RoadMapStudyStatusDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -34,15 +35,27 @@ import java.util.List;
 public class UserRoadMapController {
 
     private final RoadMapService roadMapService;
+    private final RoadMapStudyService roadMapStudyService;
     private final RoadMapLikeService roadMapLikeService;
-    @Operation(summary = "로드맵 학습하기", description = "Start to study the roadmap (desc)")
-    @PostMapping(path = "/study/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public MyMapResponse<Long> create(@PathVariable("id") Long roadMapId, @RequestBody RoadMapStudyStartDto studyStartDto, Authentication authentication) {
+
+    @Operation(summary = "포크", description = "로드맵 포크하기")
+    @PostMapping(path = "/fork/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public MyMapResponse<Long> fork(@PathVariable("id") Long roadMapId, @RequestBody RoadMapCopyDto roadMapCopyDto, Authentication authentication) {
         User currentUser = (User) authentication.getPrincipal();
 
         return MyMapResponse.create()
                 .succeed()
-                .buildWith(roadMapService.startStudy(currentUser.getId(), roadMapId, studyStartDto));
+                .buildWith(roadMapService.forkWith(currentUser, roadMapId, roadMapCopyDto).getId());
+    }
+
+    @Operation(summary = "로드맵 학습하기", description = "Start to study the roadmap (desc)")
+    @PostMapping(path = "/study/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public MyMapResponse<Long> create(@PathVariable("id") Long roadMapId, @RequestBody RoadMapCopyDto roadMapCopyDto, Authentication authentication) {
+        User currentUser = (User) authentication.getPrincipal();
+
+        return MyMapResponse.create()
+                .succeed()
+                .buildWith(roadMapStudyService.startStudy(currentUser, roadMapId, roadMapCopyDto));
     }
 
     @Operation(summary = "학습 중인 로드맵 상세 조회", description = "Get the roadmap details on study (desc)")

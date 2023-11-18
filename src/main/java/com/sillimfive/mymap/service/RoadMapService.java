@@ -8,7 +8,6 @@ import com.sillimfive.mymap.domain.tag.Tag;
 import com.sillimfive.mymap.domain.users.User;
 import com.sillimfive.mymap.repository.*;
 import com.sillimfive.mymap.web.dto.roadmap.*;
-import com.sillimfive.mymap.web.dto.study.RoadMapStudyStartDto;
 import com.sillimfive.mymap.web.dto.tag.TagDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +36,7 @@ public class RoadMapService {
     private final TagRepository tagRepository;
     private final ImageRepository imageRepository;
     private final UserRepository userRepository;
+    private final AwsS3ImageService awsS3ImageService;
 
     // todo: batch insert for node, tag
     @Transactional
@@ -94,20 +94,35 @@ public class RoadMapService {
             roadMap.changeImage(image);
         }
 
-        Category foundCategory = categoryRepository.findById(editDto.getCategoryId())
+        // edit category
+        changeCategoryIfDifferent(roadMap, editDto.getCategoryId());
+
+        // edit contents
+        boolean contentsChanged = roadMap.changeContents(editDto.getTitle(), editDto.getDescription());
+
+        // edit nodes
+        boolean nodeChanged = roadMap.changeNodeTree(editDto.getNodeDtoList());
+
+        // edit tags
+        changeTagsIfDifferent(roadMap.getRoadMapTags(), editDto.getTags());
+
+        // todo: add to roadMapHistory
+
+        return roadMapId;
+    }
+
+    private void changeCategoryIfDifferent(RoadMap roadMap, Long categoryId) {
+        Category foundCategory = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new IllegalArgumentException("There is no category searched"));
 
         if (!roadMap.getCategory().equals(foundCategory)) roadMap.changeCategory(foundCategory);
+    }
 
-        boolean contentsChanged = roadMap.changeContents(editDto.getTitle(), editDto.getDescription());
-        boolean nodeChanged = roadMap.changeNodeTree(editDto.getNodeDtoList());
-
+    private void changeTagsIfDifferent(List<RoadMapTag> roadMapTags, List<String> tagNames) {
         // 제거한 태그 제외
         List<RoadMapTag> deleteList = new ArrayList<>();
         List<String> exceptNames = new ArrayList<>();
-        List<String> tagNames = editDto.getTags();
 
-        List<RoadMapTag> roadMapTags = roadMap.getRoadMapTags();
         for (RoadMapTag roadMapTag : roadMapTags) {
             boolean deleteFlag = true;
 
@@ -125,16 +140,13 @@ public class RoadMapService {
             }
         }
 
-        // 변경이 없는 태그들을 제외한 신규 태그들을 신규 태그로 추가한다.
+        // 변경이 없는 태그들을 제외한 신규 태그들을 추가한다.
         tagNames.removeAll(exceptNames);
         roadMapTags.addAll(
                 RoadMapTag.createRoadMapTags(
                         tagNames.stream()
                                 .map(s -> new Tag(s))
                                 .collect(Collectors.toList())));
-        // todo: add to roadMapHistory
-
-        return roadMapId;
     }
 
     public RoadMapDetailResponseDto findById(Long id) {
@@ -155,5 +167,29 @@ public class RoadMapService {
     public PageImpl<RoadMapResponseDto> findListBy(RoadMapSearch searchCondition, Pageable pageable) {
 
         return roadMapQuerydslRepository.searchList(searchCondition, pageable);
+    }
+
+    @Transactional
+    public RoadMap forkWith(User user, Long roadMapId, RoadMapCopyDto copyDto) {
+        RoadMap targetRoadMap = roadMapQuerydslRepository.findByIdWithNode(roadMapId).orElseThrow(()
+                -> new IllegalArgumentException("roadMapId is not valid"));
+
+        if (copyDto.getImageId().equals(targetRoadMap.getImage().getId())) {
+            Image copied = awsS3ImageService.copyOf(targetRoadMap.getImage(), user.getId());
+            copyDto.setImageId(copied.getId());
+        }
+
+        RoadMap copiedRoadMap = RoadMap.copyOfWithoutImage(targetRoadMap, user);
+        copiedRoadMap.changeImage(imageRepository.findById(copyDto.getImageId()).get());
+
+        if (copyDto.isChangedFlag()) {
+            changeCategoryIfDifferent(copiedRoadMap, copyDto.getCategoryId());
+            copiedRoadMap.changeContents(copyDto.getTitle(), copyDto.getDescription());
+            copiedRoadMap.changeNodeTree(copyDto.getNodeDtoList());
+            changeTagsIfDifferent(copiedRoadMap.getRoadMapTags(), copyDto.getTags());
+        }
+
+        return roadMapRepository.save(copiedRoadMap);
+
     }
 }

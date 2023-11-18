@@ -44,4 +44,12 @@ public class RoadMapTag {
 
         return roadMapTagList;
     }
+
+    public static RoadMapTag copyOf(RoadMapTag origin, RoadMap linkedRoadMap) {
+        RoadMapTag copied = new RoadMapTag();
+        copied.tag = origin.getTag();
+        copied.setRoadMap(linkedRoadMap);
+
+        return copied;
+    }
 }
