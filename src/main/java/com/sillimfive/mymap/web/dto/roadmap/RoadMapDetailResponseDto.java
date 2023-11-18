@@ -7,12 +7,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Getter
+@Getter @Setter
 @NoArgsConstructor
 @ToString
 public class RoadMapDetailResponseDto {
@@ -35,6 +36,8 @@ public class RoadMapDetailResponseDto {
     private String imageDownloadPath;
     @Schema(example = "DEFAULT")
     private String theme;
+    @Schema(example = "0")
+    private int likeCount;
 
     public RoadMapDetailResponseDto(RoadMap roadMap) {
         this.roadMapId = roadMap.getId();

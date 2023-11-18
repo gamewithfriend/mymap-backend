@@ -23,4 +23,8 @@ public class Tag {
     public void countIncrease() {
         count++;
     }
+
+    public void countDecrease() {
+        count--;
+    }
 }
