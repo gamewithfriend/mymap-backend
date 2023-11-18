@@ -76,13 +76,14 @@ public class RoadMapController {
                 .buildWith(roadMapService.findById(roadMapId));
     }
 
-    @Operation(summary = "로드맵 포크", description = "todo: implementation")
-    @GetMapping(path = "/{id}/fork", produces = MediaType.APPLICATION_JSON_VALUE)
-    public MyMapResponse<Long> fork() {
+    @Operation(summary = "로드맵 포크", description = "현재 조회 중인 로드맵 포크하기")
+    @PostMapping(path = "/{id}/fork", produces = MediaType.APPLICATION_JSON_VALUE)
+    public MyMapResponse<Long> fork(@PathVariable("id") Long roadMapId, @RequestBody RoadMapCopyDto roadMapCopyDto, Authentication authentication) {
+        User currentUser = (User) authentication.getPrincipal();
 
         return MyMapResponse.create()
                 .succeed()
-                .buildWith(1L);
+                .buildWith(roadMapService.forkWith(currentUser, roadMapId, roadMapCopyDto).getId());
     }
 
     @Operation(summary = "로드맵 수정", description = "Edit the roadmap (desc)")
