@@ -32,6 +32,7 @@ public class RoadMapService {
     private final RoadMapRepository roadMapRepository;
     private final RoadMapQuerydslRepository roadMapQuerydslRepository;
     private final RoadMapTagRepository roadMapTagRepository;
+    private final RoadMapLikeRepository roadMapLikeRepository;
     private final CategoryRepository categoryRepository;
     private final TagRepository tagRepository;
     private final ImageRepository imageRepository;
@@ -146,6 +147,7 @@ public class RoadMapService {
 
         RoadMapDetailResponseDto response = new RoadMapDetailResponseDto(roadMap);
         response.addTags(tags);
+        response.setLikeCount(roadMapLikeRepository.getLikeCount(id));
 
         return response;
     }
@@ -153,17 +155,5 @@ public class RoadMapService {
     public PageImpl<RoadMapResponseDto> findListBy(RoadMapSearch searchCondition, Pageable pageable) {
 
         return roadMapQuerydslRepository.searchList(searchCondition, pageable);
-    }
-
-    /**
-     *
-     * @param userId
-     * @param roadMapId
-     * @param studyStartDto
-     * @return roadMapStudy's id
-     */
-    public Long startStudy(Long userId, Long roadMapId, RoadMapStudyStartDto studyStartDto) {
-
-        return null;
     }
 }
