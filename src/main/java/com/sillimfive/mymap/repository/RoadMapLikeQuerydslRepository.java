@@ -1,18 +1,14 @@
 package com.sillimfive.mymap.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sillimfive.mymap.domain.roadmap.QRoadMapLike;
-import com.sillimfive.mymap.domain.roadmap.RoadMapLike;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 import static com.sillimfive.mymap.domain.roadmap.QRoadMapLike.roadMapLike;
 
 @Repository
 @RequiredArgsConstructor
-public class RoadMapLikeQuertdslRepository {
+public class RoadMapLikeQuerydslRepository {
     private final JPAQueryFactory queryFactory;
 
     public Long findByRoadMapIdRoadMapLike (Long userId, Long roadMapId){
