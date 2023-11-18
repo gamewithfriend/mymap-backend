@@ -4,7 +4,6 @@ import com.sillimfive.mymap.domain.users.User;
 import com.sillimfive.mymap.service.RoadMapLikeService;
 import com.sillimfive.mymap.service.RoadMapService;
 import com.sillimfive.mymap.web.dto.MyMapResponse;
-import com.sillimfive.mymap.web.dto.roadmap.RoadMapLikeRequestDto;
 import com.sillimfive.mymap.web.dto.roadmap.RoadMapLikeResponseDto;
 import com.sillimfive.mymap.web.dto.roadmap.RoadMapResponseDto;
 import com.sillimfive.mymap.web.dto.roadmap.RoadMapSearch;
@@ -109,7 +108,7 @@ public class UserRoadMapController {
     public MyMapResponse<RoadMapLikeResponseDto> like(@PathVariable("roadMapId") Long id, Authentication authentication) {
 
         User likeUser = (User) authentication.getPrincipal();
-        Long roadMapLikeId = roadMapLikeService.CreateOrDelete(likeUser, id);
+        Long roadMapLikeId = roadMapLikeService.createOrDelete(likeUser, id);
         RoadMapLikeResponseDto roadMapLikeResponseDto = new RoadMapLikeResponseDto(roadMapLikeId);
         return MyMapResponse.create()
                 .succeed()
