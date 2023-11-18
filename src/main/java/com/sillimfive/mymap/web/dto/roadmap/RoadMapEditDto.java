@@ -29,9 +29,4 @@ public class RoadMapEditDto {
 
     @ArraySchema(minItems = 1, schema = @Schema(implementation = RoadMapNodeEditDto.class))
     private List<RoadMapNodeEditDto> nodeDtoList;
-
-    @Schema(hidden = true)
-    public boolean hasNewTags() {
-        return tags != null && !tags.isEmpty();
-    }
 }

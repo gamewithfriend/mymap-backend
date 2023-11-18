@@ -2,10 +2,10 @@ package com.sillimfive.mymap.service;
 
 import com.sillimfive.mymap.domain.Category;
 import com.sillimfive.mymap.domain.Image;
-import com.sillimfive.mymap.domain.users.User;
 import com.sillimfive.mymap.domain.roadmap.RoadMap;
 import com.sillimfive.mymap.domain.roadmap.RoadMapTag;
 import com.sillimfive.mymap.domain.tag.Tag;
+import com.sillimfive.mymap.domain.users.User;
 import com.sillimfive.mymap.repository.*;
 import com.sillimfive.mymap.web.dto.roadmap.*;
 import com.sillimfive.mymap.web.dto.study.RoadMapStudyStartDto;
@@ -49,14 +49,21 @@ public class RoadMapService {
                 .orElseThrow(() -> new IllegalArgumentException("image is not found for " + createDto.getImageId()));
 
         List<Tag> tags = new ArrayList<>();
-        if (Optional.ofNullable(createDto.getTagIds()).isPresent())
-            tags.addAll(tagRepository.findByIdIn(createDto.getTagIds()));
+        List<String> tagNames = createDto.getTags();
+        if(tagNames.size() != 0) {
+            tags.addAll(tagRepository.findByNameIn(tagNames));
 
-        if(createDto.getNewTags().size() != 0) {
-            List<Tag> tagList = createDto
-                    .getNewTags().stream().map(Tag::new).collect(Collectors.toList());
+            for (String tagName : tagNames) {
+                boolean isNewTag = true;
+                for (Tag foundTag : tags) {
+                    if (foundTag.getName().equals(tagName)) {
+                        isNewTag = false;
+                        break;
+                    }
+                }
 
-            tags.addAll(tagList);
+                if (isNewTag) tags.add(new Tag(tagName));
+            }
         }
 
         // create RoadMapTag
@@ -75,35 +82,55 @@ public class RoadMapService {
     }
 
     @Transactional
-    public Long edit(Long roadMapId, RoadMapEditDto updateDto) {
+    public Long edit(Long roadMapId, RoadMapEditDto editDto) {
         RoadMap roadMap = roadMapQuerydslRepository.findByIdWithNode(roadMapId)
                 .orElseThrow(() -> new IllegalArgumentException("There is no roadMap"));
 
-        if (!roadMap.getImage().getId().equals(updateDto.getImageId())) {
-            Image image = imageRepository.findById(updateDto.getImageId())
-                    .orElseThrow(() -> new IllegalArgumentException());
+        if (!roadMap.getImage().getId().equals(editDto.getImageId())) {
+            Image image = imageRepository.findById(editDto.getImageId())
+                    .orElseThrow(() -> new IllegalArgumentException("주어진 이미지 식별값(id)을 통해 이미지를 찾을 수 없습니다."));
 
             roadMap.changeImage(image);
         }
 
-        Category foundCategory = categoryRepository.findById(updateDto.getCategoryId())
+        Category foundCategory = categoryRepository.findById(editDto.getCategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("There is no category searched"));
 
         if (!roadMap.getCategory().equals(foundCategory)) roadMap.changeCategory(foundCategory);
 
-        boolean contentsChanged = roadMap.changeContents(updateDto.getTitle(), updateDto.getDescription());
-        boolean nodeChanged = roadMap.changeNodeTree(updateDto.getNodeDtoList());
+        boolean contentsChanged = roadMap.changeContents(editDto.getTitle(), editDto.getDescription());
+        boolean nodeChanged = roadMap.changeNodeTree(editDto.getNodeDtoList());
 
-        List<RoadMapTag> newRoadMapTags = new ArrayList<>();
+        // 제거한 태그 제외
+        List<RoadMapTag> deleteList = new ArrayList<>();
+        List<String> exceptNames = new ArrayList<>();
+        List<String> tagNames = editDto.getTags();
 
-        if (updateDto.hasNewTags()) {
-            List<Tag> tagList = updateDto.getNewTags().stream()
-                    .map(Tag::new).collect(Collectors.toList());
+        List<RoadMapTag> roadMapTags = roadMap.getRoadMapTags();
+        for (RoadMapTag roadMapTag : roadMapTags) {
+            boolean deleteFlag = true;
 
-            newRoadMapTags.addAll(RoadMapTag.createRoadMapTags(tagList));
+            for (String tagName : tagNames) {
+                if (roadMapTag.getTag().getName().equals(tagName)) {
+                    exceptNames.add(tagName);
+                    deleteFlag = false;
+                    break;
+                }
+            }
+
+            if (deleteFlag) {
+                deleteList.add(roadMapTag);
+                roadMapTag.getTag().countDecrease();
+            }
         }
-        roadMap.updateRoadMapTags(updateDto.getRoadMapTagIds(), newRoadMapTags);
 
+        // 변경이 없는 태그들을 제외한 신규 태그들을 신규 태그로 추가한다.
+        tagNames.removeAll(exceptNames);
+        roadMapTags.addAll(
+                RoadMapTag.createRoadMapTags(
+                        tagNames.stream()
+                                .map(s -> new Tag(s))
+                                .collect(Collectors.toList())));
         // todo: add to roadMapHistory
 
         return roadMapId;
