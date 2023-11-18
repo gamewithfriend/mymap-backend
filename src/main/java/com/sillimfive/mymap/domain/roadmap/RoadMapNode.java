@@ -34,6 +34,14 @@ public class RoadMapNode extends BaseTimeEntity {
         this.nodeTitle = nodeTitle;
     }
 
+    public static RoadMapNode copyOf(RoadMapNode origin) {
+        return RoadMapNode.builder()
+                .nodeOrder(origin.getNodeOrder())
+                .nodeContent(origin.getNodeContent())
+                .nodeTitle(origin.getNodeTitle())
+                .build();
+    }
+
     protected void setRoadMap(RoadMap roadMap) {
         this.roadMap = roadMap;
     }

@@ -6,6 +6,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.CopyObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.sillimfive.mymap.domain.Image;
 import com.sillimfive.mymap.domain.ImageType;
@@ -96,8 +97,14 @@ public class AwsS3ImageService {
     }
 
     private void deleteFromS3(Image image) {
-        String key = image.getPath().replace(awsProperties.getUrl() + AWS_FILE_SEPARATOR, "");
+        String key = getKeyFromUrlPath(image);
         s3Client.deleteObject(awsProperties.getBucketName(), key);
+    }
+
+    private String getKeyFromUrlPath(Image image) {
+        String key = image.getPath().replace(awsProperties.getUrl() + AWS_FILE_SEPARATOR, "");
+
+        return key;
     }
 
     public ImageResponseDto swap(Long imageId, String type, MultipartFile multipartFile) {
@@ -119,5 +126,15 @@ public class AwsS3ImageService {
         image.changePath(changedUrlPath);
 
         return new ImageResponseDto(image);
+    }
+
+    public Image copyOf(Image origin, Long userId) {
+        String key = getKeyFromUrlPath(origin);
+        String destinationKey = key.split(AWS_FILE_SEPARATOR)[0] + getFileName(userId);
+
+        CopyObjectRequest copyObjRequest = new CopyObjectRequest(awsProperties.getBucketName(), key, awsProperties.getBucketName(), destinationKey);
+        s3Client.copyObject(copyObjRequest);
+
+        return imageRepository.save(new Image(awsProperties.getUrl() + AWS_FILE_SEPARATOR + destinationKey, ImageType.ROADMAPS));
     }
 }

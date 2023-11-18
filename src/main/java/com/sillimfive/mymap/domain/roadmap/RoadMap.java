@@ -61,9 +61,9 @@ public class RoadMap extends BaseTimeEntity {
     private boolean deleteFlag;
 
     @Builder
-    protected RoadMap(boolean hiddenFlag, User origin, Category category, String title, String description, Image image, RoadMapTheme theme) {
+    protected RoadMap(boolean hiddenFlag, User creator, User origin, Category category, String title, String description, Image image, RoadMapTheme theme) {
         this.hiddenFlag = hiddenFlag;
-        this.creator = origin;
+        this.creator = creator;
         this.origin = origin;
         this.category = category;
         this.title = title;
@@ -76,6 +76,7 @@ public class RoadMap extends BaseTimeEntity {
         Assert.hasText(title, "title must not be empty");
 
         return RoadMap.builder()
+                .creator(creator)
                 .origin(creator)
                 .category(category)
                 .title(title)
@@ -83,6 +84,28 @@ public class RoadMap extends BaseTimeEntity {
                 .image(image)
                 .theme(theme)
                 .build();
+    }
+
+    /**
+     * copy RoadMap without image
+     */
+    public static RoadMap copyOfWithoutImage(RoadMap original, User user) {
+        RoadMap copied = RoadMap.builder()
+                .creator(user)
+                .origin(original.getOrigin())
+                .category(original.getCategory())
+                .title(original.getTitle())
+                .description(original.getDescription())
+                .theme(original.getTheme())
+                .build();
+
+        for (RoadMapNode roadMapNode : original.getRoadMapNodes())
+            copied.getRoadMapNodes().add(RoadMapNode.copyOf(roadMapNode));
+
+        for (RoadMapTag roadMapTag : original.getRoadMapTags())
+            copied.getRoadMapTags().add(RoadMapTag.copyOf(roadMapTag, copied));
+
+        return copied;
     }
 
     public void addRoadMapNodes(List<RoadMapNode> nodes) {
@@ -162,16 +185,5 @@ public class RoadMap extends BaseTimeEntity {
         if (roadMapNodes.size() != deleteList.size()) changedFlag = true;
 
         return changedFlag;
-    }
-
-    public void updateRoadMapTags(List<Long> roadMapTagIdList, List<RoadMapTag> newTags) {
-        List<RoadMapTag> removeList = new ArrayList<>();
-        for (RoadMapTag roadMapTag : roadMapTags) {
-            if (roadMapTagIdList.contains(roadMapTag.getId())) continue;
-
-            removeList.add(roadMapTag);
-        }
-        roadMapTags.remove(removeList);
-        roadMapTags.addAll(newTags);
     }
 }

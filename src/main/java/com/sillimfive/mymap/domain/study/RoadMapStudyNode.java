@@ -35,8 +35,8 @@ public class RoadMapStudyNode implements Persistable<Long> {
         return isCreated;
     }
 
-    public RoadMapStudyNode(Long id, RoadMapStudy roadMapStudy, String memo) {
-        this.id = id;
+    public RoadMapStudyNode(Long roadMapNodeId, RoadMapStudy roadMapStudy, String memo) {
+        this.id = roadMapNodeId;
         this.roadMapStudy = roadMapStudy;
         this.memo = memo;
         this.isCreated = true;
