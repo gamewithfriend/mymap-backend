@@ -38,16 +38,6 @@ public class UserRoadMapController {
     private final RoadMapStudyService roadMapStudyService;
     private final RoadMapLikeService roadMapLikeService;
 
-    @Operation(summary = "포크", description = "로드맵 포크하기")
-    @PostMapping(path = "/fork/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public MyMapResponse<Long> fork(@PathVariable("id") Long roadMapId, @RequestBody RoadMapCopyDto roadMapCopyDto, Authentication authentication) {
-        User currentUser = (User) authentication.getPrincipal();
-
-        return MyMapResponse.create()
-                .succeed()
-                .buildWith(roadMapService.forkWith(currentUser, roadMapId, roadMapCopyDto).getId());
-    }
-
     @Operation(summary = "로드맵 학습하기", description = "Start to study the roadmap (desc)")
     @PostMapping(path = "/study/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public MyMapResponse<Long> create(@PathVariable("id") Long roadMapId, @RequestBody RoadMapCopyDto roadMapCopyDto, Authentication authentication) {
