@@ -62,9 +62,17 @@ public class TokenService {
 
         User oAuthUser = getOauthUser(accessToken, tokenType);
         // todo - 저장 서비스, 토큰 발급 서비스  -> 이후 return spec 파싱
+        long count = userRepository.count() +1L;
+        String settingNickName ="MYMAP" +count;
+        User insertUser = User.builder()
+                .nickName(settingNickName)
+                .email(oAuthUser.getEmail())
+                .loginId(oAuthUser.getLoginId())
+                .oAuthType(oAuthUser.getOAuthType())
+                .build();
 
         User user = userRepository.findByEmail(oAuthUser.getEmail())
-                    .orElseGet(() -> userRepository.save(oAuthUser));
+                    .orElseGet(() ->userRepository.save(insertUser));
 
         AuthenticationTokenResponse authTokenResponse = createAuthTokenResponse(user);
         saveRefreshToken(user.getId(), authTokenResponse.getRefreshToken());

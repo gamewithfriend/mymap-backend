@@ -1,6 +1,7 @@
 package com.sillimfive.mymap.service;
 
 import com.sillimfive.mymap.domain.Alarm;
+import com.sillimfive.mymap.domain.AlarmType;
 import com.sillimfive.mymap.domain.roadmap.RoadMapLike;
 import com.sillimfive.mymap.domain.roadmap.RoadMapReply;
 import com.sillimfive.mymap.domain.users.User;
@@ -26,7 +27,7 @@ public class AlarmService {
     private final RoadMapReplyRepository roadMapReplyRepository;
     private final RoadMapLikeRepository roadMapLikeRepository;
 
-    public Long create(String alarmType, User user,Long roadMapReplyId, Long roadMapLikeId) {
+    public Long create(AlarmType alarmType, User user, Long roadMapReplyId, Long roadMapLikeId) {
         RoadMapReply roadMapReply =null;
         RoadMapLike roadMapLike =null;
         if(roadMapReplyId != null){
