@@ -1,6 +1,7 @@
 package com.sillimfive.mymap.service;
 
 import com.sillimfive.mymap.domain.Report;
+import com.sillimfive.mymap.domain.ReportType;
 import com.sillimfive.mymap.domain.roadmap.RoadMapReply;
 import com.sillimfive.mymap.domain.users.User;
 import com.sillimfive.mymap.domain.roadmap.RoadMap;

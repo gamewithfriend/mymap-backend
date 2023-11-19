@@ -34,17 +34,19 @@ public class Report extends BaseTimeEntity {
     private User reporter;
 
     private String content;
-    private String reportType;
+
+    @Enumerated(EnumType.STRING)
+    private ReportType reportType;
 
     @Builder
-    public Report(String content, String reportType, RoadMap roadMap ,User reporter, RoadMapReply roadMapReply){
+    public Report(String content, ReportType reportType, RoadMap roadMap ,User reporter, RoadMapReply roadMapReply){
         this.content = content;
         this.reportType = reportType;
         this.roadMap = roadMap;
         this.reporter = reporter;
     }
 
-    public static Report createReport(User reporter,String content, String reportType, RoadMap roadMap, RoadMapReply roadMapReply) {
+    public static Report createReport(User reporter,String content, ReportType reportType, RoadMap roadMap, RoadMapReply roadMapReply) {
 
         return Report.builder()
                 .reporter(reporter)

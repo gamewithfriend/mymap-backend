@@ -20,11 +20,11 @@ public class AlarmResponseDto {
     @Schema(example = "targetId: alarm01: reply_id ,alarm02: like_id ,otherwise: alarm_id ")
     private  Long targetId;
 
-    public AlarmResponseDto(Alarm alarm , String content,String alarmType,Long targetId) {
+    public AlarmResponseDto(Alarm alarm , String content,Long targetId) {
         this.id = alarm.getId();
         this.content = content;
         this.readFlag = alarm.isReadFlag();
-        this.alarmType = alarm.getAlarmType();
+        this.alarmType = alarm.getAlarmType().toString();
         this.targetId = targetId;
     }
 }

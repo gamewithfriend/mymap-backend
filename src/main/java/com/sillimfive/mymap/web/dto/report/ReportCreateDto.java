@@ -1,8 +1,10 @@
 package com.sillimfive.mymap.web.dto.report;
 
 import com.sillimfive.mymap.domain.Report;
+import com.sillimfive.mymap.domain.ReportType;
 import com.sillimfive.mymap.domain.roadmap.RoadMap;
 import com.sillimfive.mymap.domain.roadmap.RoadMapReply;
+import com.sillimfive.mymap.domain.roadmap.RoadMapTheme;
 import com.sillimfive.mymap.domain.users.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -22,7 +24,9 @@ public class ReportCreateDto {
 
     public Report  convert(User reporter, String reportType, String content, RoadMap roadMap, RoadMapReply roadMapReply) {
 
-        return Report.createReport(reporter,reportType,content,roadMap, roadMapReply);
+        ReportType reportTypeEnum;
+        reportTypeEnum = ReportType.valueOf(reportType);
+        return Report.createReport(reporter,content,reportTypeEnum,roadMap, roadMapReply);
 
     }
 }

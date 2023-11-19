@@ -1,5 +1,6 @@
 package com.sillimfive.mymap.service;
 
+import com.sillimfive.mymap.domain.AlarmType;
 import com.sillimfive.mymap.domain.roadmap.RoadMap;
 import com.sillimfive.mymap.domain.roadmap.RoadMapLike;
 import com.sillimfive.mymap.domain.users.User;
@@ -33,7 +34,7 @@ public class RoadMapLikeService {
             RoadMapLike roadMapLike = RoadMapLike.createRoadMapLike(user, roadMap);
             roadMapLikeRepository.save(roadMapLike);
             roadMapLikeId = roadMapLike.getId();
-            alarmService.create("alarm02",user,null,roadMapLikeId);
+            alarmService.create(AlarmType.alarm02,user,null,roadMapLikeId);
         }else {
             RoadMapLike roadMapLike = roadMapLikeRepository.getReferenceById(roadMapLikeId);
             roadMapLikeRepository.delete(roadMapLike);

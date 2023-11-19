@@ -36,12 +36,13 @@ public class Alarm extends BaseTimeEntity {
     @JoinColumn(name = "like_id")
     private RoadMapLike roadMapLike;
 
-    private String alarmType;
+    @Enumerated(EnumType.STRING)
+    private AlarmType alarmType;
     private boolean deleteFlag;
     private boolean readFlag;
 
     @Builder
-    protected Alarm(String alarmType, boolean deleteFlag, boolean readFlag, User user,RoadMapReply roadMapReply,RoadMapLike roadMapLike ){
+    protected Alarm(AlarmType alarmType, boolean deleteFlag, boolean readFlag, User user,RoadMapReply roadMapReply,RoadMapLike roadMapLike ){
         this.alarmType = alarmType;
         this.deleteFlag = deleteFlag;
         this.readFlag = readFlag;
@@ -50,7 +51,7 @@ public class Alarm extends BaseTimeEntity {
         this.roadMapLike = roadMapLike;
     }
 
-    public static Alarm createAlarm(String alarmType, boolean deleteFlag, boolean readFlag, User user,RoadMapReply roadMapReply,RoadMapLike roadMapLike) {
+    public static Alarm createAlarm(AlarmType alarmType, boolean deleteFlag, boolean readFlag, User user,RoadMapReply roadMapReply,RoadMapLike roadMapLike) {
 
         return Alarm.builder()
                 .alarmType(alarmType)

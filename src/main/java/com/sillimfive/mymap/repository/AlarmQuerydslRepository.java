@@ -1,6 +1,7 @@
 package com.sillimfive.mymap.repository;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sillimfive.mymap.web.dto.alarm.AlarmResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -26,15 +27,15 @@ public class AlarmQuerydslRepository {
                         alarm.id,
                         alarm.readFlag,
                         code.description.prepend(userNickName).as("content"),
-                        alarm.alarmType,
-                        alarm.alarmType
-                                .when("alarm01").then(alarm.roadMapReply.id)
-                                .when("alarm02").then(alarm.roadMapLike.id)
+                        alarm.alarmType.stringValue().as("alarmType"),
+                        new CaseBuilder()
+                                .when(alarm.alarmType.stringValue().eq("alarm01")).then(alarm.roadMapReply.id)
+                                .when(alarm.alarmType.stringValue().eq("alarm02")).then(alarm.roadMapLike.id)
                                 .otherwise(alarm.id)
                                 .as("targetId")
                         ))
                         .from(alarm,code)
-                        .where(alarm.alarmType.eq(code.id),alarm.readFlag.eq(readFlag), alarm.deleteFlag.eq(false))
+                        .where(alarm.alarmType.stringValue().eq(code.id),alarm.readFlag.eq(readFlag), alarm.deleteFlag.eq(false))
                 .orderBy(alarm.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
