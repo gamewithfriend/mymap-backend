@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sillimfive.mymap.config.auth.jwt.TokenProvider;
 import com.sillimfive.mymap.domain.RefreshToken;
+import com.sillimfive.mymap.domain.users.OAuthType;
 import com.sillimfive.mymap.domain.users.User;
+import com.sillimfive.mymap.domain.users.UserState;
 import com.sillimfive.mymap.repository.RefreshTokenRepository;
 import com.sillimfive.mymap.repository.UserRepository;
 import com.sillimfive.mymap.web.dto.token.AuthenticationTokenResponse;
@@ -64,11 +66,13 @@ public class TokenService {
         // todo - 저장 서비스, 토큰 발급 서비스  -> 이후 return spec 파싱
         long count = userRepository.count() +1L;
         String settingNickName ="MYMAP" +count;
+        OAuthType oAuthType = OAuthType.valueOf(tokenType);
         User insertUser = User.builder()
                 .nickName(settingNickName)
                 .email(oAuthUser.getEmail())
                 .loginId(oAuthUser.getLoginId())
-                .oAuthType(oAuthUser.getOAuthType())
+                .oAuthType(oAuthType)
+                .userState(UserState.user01)
                 .build();
 
         User user = userRepository.findByEmail(oAuthUser.getEmail())

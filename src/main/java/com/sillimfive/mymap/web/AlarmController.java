@@ -64,7 +64,6 @@ public class AlarmController {
     @Operation(summary = "유저 알람 삭제", description = "User delete Alarm ")
     @DeleteMapping
     public MyMapResponse<List<Long>> deleteAlarm(@RequestBody AlarmDeleteDto alarmDeleteDto) {
-        JSONObject json = new JSONObject();
         List<Long> alarmList = alarmDeleteDto.getAlarmList();
         alarmService.deleteAlarmList(alarmList);
         return MyMapResponse.create()
