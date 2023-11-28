@@ -1,22 +1,24 @@
 package com.sillimfive.mymap.web;
 
 import com.sillimfive.mymap.domain.users.User;
+import com.sillimfive.mymap.service.RoadMapBookmarkService;
 import com.sillimfive.mymap.service.RoadMapLikeService;
 import com.sillimfive.mymap.service.RoadMapService;
 import com.sillimfive.mymap.service.RoadMapStudyService;
 import com.sillimfive.mymap.web.dto.MyMapResponse;
-import com.sillimfive.mymap.web.dto.roadmap.RoadMapCopyDto;
-import com.sillimfive.mymap.web.dto.roadmap.RoadMapLikeResponseDto;
-import com.sillimfive.mymap.web.dto.roadmap.RoadMapResponseDto;
-import com.sillimfive.mymap.web.dto.roadmap.RoadMapSearch;
+import com.sillimfive.mymap.web.dto.alarm.AlarmDeleteDto;
+import com.sillimfive.mymap.web.dto.roadmap.*;
 import com.sillimfive.mymap.web.dto.study.MemoDto;
 import com.sillimfive.mymap.web.dto.study.RoadMapStudyDetailDto;
 import com.sillimfive.mymap.web.dto.study.RoadMapStudyStatusDto;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONObject;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -37,6 +39,7 @@ public class UserRoadMapController {
     private final RoadMapService roadMapService;
     private final RoadMapStudyService roadMapStudyService;
     private final RoadMapLikeService roadMapLikeService;
+    private final RoadMapBookmarkService roadMapBookmarkService;
 
     @Operation(summary = "로드맵 학습하기", description = "Start to study the roadmap (desc)")
     @PostMapping(path = "/study/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -93,18 +96,45 @@ public class UserRoadMapController {
     }
 
     // ###############################################################################
-
-    @Operation(summary = "로드맵 북마크 상태 업데이트", description = "todo: implementation")
-    @GetMapping(path = "/bookmarks")
-    public MyMapResponse<PageImpl<Object>> bookmark() {
-        List<Object> list = new ArrayList<>();
-        PageImpl<Object> page = new PageImpl<>(list);
+    @Parameter(name = "pageable", hidden = true)
+    @Operation(summary = "유저 로드맵 북마크 조회", description = "get User BookmarkList",
+            parameters = {
+                    @Parameter(name = "page", example = "0"),
+                    @Parameter(name = "size", example = "10")
+            }
+    )
+    @GetMapping(path = "/bookmark")
+    public MyMapResponse<PageImpl<RoadMapBookmarkResponseDto>> bookmark(Authentication authentication, Pageable pageable) {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+        PageImpl<RoadMapBookmarkResponseDto> userRoadMapBookmarkList = roadMapBookmarkService.findByUserIdRoadMapBookmarkResponseDtoList(userId,pageable);
 
         return MyMapResponse.create()
                 .succeed()
-                .buildWith(page);
+                .buildWith(userRoadMapBookmarkList);
+    }
+    @Operation(summary = "유저 북마크 다중 삭제", description = "User delete BookmarkList ")
+    @DeleteMapping(path = "/bookmark", produces = MediaType.APPLICATION_JSON_VALUE)
+    public MyMapResponse<List<Long>> deleteBookmarkList(@RequestBody RoadMapBookmarkDeleteDto roadMapBookmarkDeleteDto) {
+        List<@Min(value = 1) Long> roadMapBookmarkList = roadMapBookmarkDeleteDto.getRoadMapBookmarkList();
+        roadMapBookmarkService.deleteBookmarkList(roadMapBookmarkList);
+        return MyMapResponse.create()
+                .succeed()
+                .buildWith(roadMapBookmarkList);
     }
 
+
+    @Operation(summary = "로드맵 북마크 처리", description = "이미 북마크 등록했을경우 삭제 아니면 등록")
+    @PutMapping(path = "/bookmark/{roadMapId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public MyMapResponse<RoadMapBookmarkResponseDto> bookmark(@PathVariable("roadMapId") Long roadMapId, Authentication authentication) {
+
+        User likeUser = (User) authentication.getPrincipal();
+        Long roadMapBookmarkId = roadMapBookmarkService.createOrDelete(likeUser, roadMapId);
+        RoadMapBookmarkResponseDto roadMapBookmarkResponseDto = new RoadMapBookmarkResponseDto(roadMapId,roadMapBookmarkId);
+        return MyMapResponse.create()
+                .succeed()
+                .buildWith(roadMapBookmarkResponseDto);
+    }
 
     @Operation(summary = "로드맵 좋아요 처리", description = "이미 좋아요 눌렀을경우 삭제 아니면 등록")
     @PutMapping(path = "/like/{roadMapId}", produces = MediaType.APPLICATION_JSON_VALUE)

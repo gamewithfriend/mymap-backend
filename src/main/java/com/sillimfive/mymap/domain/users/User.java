@@ -39,12 +39,12 @@ public class User extends BaseTimeEntity implements UserDetails {
 
     // todo: remove id and refactoring TokenProvider
     @Builder
-    public User(Long id, String email, String loginId, String nickName, LocalDateTime lastLogin,OAuthType oAuthType) {
+    public User(Long id, String email, String loginId, String nickName, LocalDateTime lastLogin,OAuthType oAuthType,UserState userState) {
         this.id = id;
         this.email = email;
         this.loginId = loginId;
         this.nickName = nickName;
-        this.userState = UserState.user01;
+        this.userState = userState;
         this.lastLogin = lastLogin;
         this.oAuthType = oAuthType;
     }
