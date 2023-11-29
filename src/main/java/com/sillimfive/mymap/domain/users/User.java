@@ -30,6 +30,7 @@ public class User extends BaseTimeEntity implements UserDetails {
     private OAuthType oAuthType;
     private String loginId;
     private String nickName;
+    @Enumerated(EnumType.STRING)
     private UserState userState; // 코드테이블 에서 관리 - user01 (일반), user02 (휴면)....
     private LocalDateTime lastLogin;
 
@@ -39,12 +40,11 @@ public class User extends BaseTimeEntity implements UserDetails {
 
     // todo: remove id and refactoring TokenProvider
     @Builder
-    public User(Long id, String email, String loginId, String nickName, LocalDateTime lastLogin,OAuthType oAuthType,UserState userState) {
-        this.id = id;
+    public User(String email, String loginId, String nickName, LocalDateTime lastLogin,OAuthType oAuthType,UserState userState) {
         this.email = email;
         this.loginId = loginId;
         this.nickName = nickName;
-        this.userState = userState;
+        this.userState = UserState.user01;
         this.lastLogin = lastLogin;
         this.oAuthType = oAuthType;
     }
@@ -53,7 +53,6 @@ public class User extends BaseTimeEntity implements UserDetails {
         this.nickName = nickName;
         return this;
     }
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
