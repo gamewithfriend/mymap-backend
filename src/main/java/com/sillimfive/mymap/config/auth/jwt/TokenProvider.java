@@ -76,7 +76,6 @@ public class TokenProvider {
         // todo: refactoring
         User user = User.builder()
                 .email(claims.getSubject())
-                .id(claims.get("id",Long.class))
                 .build();
 
         return new UsernamePasswordAuthenticationToken(user, token, authorities);
