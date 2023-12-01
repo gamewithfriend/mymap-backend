@@ -186,6 +186,7 @@ public class RoadMapService {
             changeCategoryIfDifferent(copiedRoadMap, copyDto.getCategoryId());
             copiedRoadMap.changeContents(copyDto.getTitle(), copyDto.getDescription());
             copiedRoadMap.changeNodeTree(copyDto.getNodeDtoList());
+            copiedRoadMap.changeHiddenFlag(copyDto.isHidden());
             changeTagsIfDifferent(copiedRoadMap.getRoadMapTags(), copyDto.getTags());
         }
 

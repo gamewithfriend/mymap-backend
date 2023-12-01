@@ -21,6 +21,8 @@ public class RoadMapEditDto {
     private String title;
     private String description;
 
+    private boolean hidden;
+
     @Min(value = 1)
     private Long categoryId;
 

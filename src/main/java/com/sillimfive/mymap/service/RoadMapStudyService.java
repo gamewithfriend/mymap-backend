@@ -32,9 +32,12 @@ public class RoadMapStudyService {
             targetRoadMap = roadMapService.forkWith(user, roadMapId, roadMapCopyDto);
         }
 
-        RoadMapStudy roadMapStudy = new RoadMapStudy(user, targetRoadMap, DEFAULT_MESSAGE);
+        RoadMapStudy roadMapStudy = new RoadMapStudy(user, targetRoadMap, null);
         roadMapStudy.addStudyNode(targetRoadMap.getRoadMapNodes());
 
         return roadMapStudyRepository.save(roadMapStudy).getId();
     }
+
+    //todo: logic to add memo
+
 }

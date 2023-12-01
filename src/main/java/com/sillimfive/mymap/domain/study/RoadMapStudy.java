@@ -38,12 +38,13 @@ public class RoadMapStudy {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
 
-    private String memo;
+    @Embedded
+    private Memo memo;
 
     @OneToMany(mappedBy = "roadMapStudy")
     private List<RoadMapStudyNode> roadMapStudyNodes = new ArrayList<>();
 
-    public RoadMapStudy(User user, RoadMap roadMap, String memo) {
+    public RoadMapStudy(User user, RoadMap roadMap, Memo memo) {
         this.user = user;
         this.roadMap = roadMap;
         this.memo = memo;
