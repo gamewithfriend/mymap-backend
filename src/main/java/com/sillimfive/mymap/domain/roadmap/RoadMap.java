@@ -126,6 +126,10 @@ public class RoadMap extends BaseTimeEntity {
         this.image = image;
     }
 
+    public void changeHiddenFlag(boolean hiddenFlag) {
+        this.hiddenFlag = hiddenFlag;
+    }
+
     /**
      * 로드맵의 제목이나 설명이 변경되었다면 true 반환.
      * 그렇지 않다면 false 반환

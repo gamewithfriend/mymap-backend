@@ -60,14 +60,27 @@ public class UserRoadMapController {
                 .buildWith(new RoadMapStudyDetailDto());
     }
 
-    @Operation(summary = "메모 작성 및 변경", description = "메모 정보 갱신")
-    @PutMapping(path = "/study/{id}/memo", produces = MediaType.APPLICATION_JSON_VALUE)
-    public MyMapResponse<Boolean> memoUpdate(@PathVariable("id") Long roadMapId, MemoDto memoDto) {
+    /*
+     * todo: check - 메모를 등록할 때, 노드에 따라 연쇄적으로 등록하는 것인지 아니면 노드당 하나만 메모를 등록하도록 설정할지.
+     */
+    @Operation(summary = "메모 등록하기", description = "메모 정보 등록")
+    @PostMapping(path = "/study/{id}/{nodeId}/memo", produces = MediaType.APPLICATION_JSON_VALUE)
+    public MyMapResponse<Boolean> memoRegister(@PathVariable("id") Long roadMapId, @PathVariable("nodeId") Long roadMapStudyNodeId, MemoDto memoDto) {
 
         return MyMapResponse.create()
                 .succeed()
                 .buildWith(true);
     }
+
+    @Operation(summary = "메모 변경하기", description = "메모 정보 변경")
+    @PutMapping(path = "/study/{id}/{nodeId}/memo", produces = MediaType.APPLICATION_JSON_VALUE)
+    public MyMapResponse<Boolean> memoUpdate(@PathVariable("id") Long roadMapId, @PathVariable("nodeId") Long roadMapStudyNodeId, MemoDto memoDto) {
+
+        return MyMapResponse.create()
+                .succeed()
+                .buildWith(true);
+    }
+
 
     @Operation(summary = "학습중인 로드맵 상태변경", description = "")
     @PutMapping(path = "/study/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
