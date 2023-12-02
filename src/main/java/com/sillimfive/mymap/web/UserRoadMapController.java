@@ -6,9 +6,7 @@ import com.sillimfive.mymap.service.RoadMapLikeService;
 import com.sillimfive.mymap.service.RoadMapService;
 import com.sillimfive.mymap.service.RoadMapStudyService;
 import com.sillimfive.mymap.web.dto.MyMapResponse;
-import com.sillimfive.mymap.web.dto.alarm.AlarmDeleteDto;
 import com.sillimfive.mymap.web.dto.roadmap.*;
-import com.sillimfive.mymap.web.dto.study.MemoDto;
 import com.sillimfive.mymap.web.dto.study.RoadMapStudyDetailDto;
 import com.sillimfive.mymap.web.dto.study.RoadMapStudyStatusDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,14 +16,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.simple.JSONObject;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Tag(name = "User to RoadMap", description = "API for Relations between User and RoadMap")
@@ -42,8 +38,11 @@ public class UserRoadMapController {
     private final RoadMapBookmarkService roadMapBookmarkService;
 
     @Operation(summary = "로드맵 학습하기", description = "Start to study the roadmap (desc)")
-    @PostMapping(path = "/study/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public MyMapResponse<Long> create(@PathVariable("id") Long roadMapId, @RequestBody RoadMapCopyDto roadMapCopyDto, Authentication authentication) {
+    @PostMapping(path = "/study/{roadMapId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public MyMapResponse<Long> create(
+            @PathVariable("roadMapId") Long roadMapId,
+            @RequestBody RoadMapCopyDto roadMapCopyDto,
+            Authentication authentication) {
         User currentUser = (User) authentication.getPrincipal();
 
         return MyMapResponse.create()
@@ -52,8 +51,8 @@ public class UserRoadMapController {
     }
 
     @Operation(summary = "학습 중인 로드맵 상세 조회", description = "Get the roadmap details on study (desc)")
-    @GetMapping(path = "/study/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public MyMapResponse<RoadMapStudyDetailDto> findById(@PathVariable("id") Long roadMapStudyId) {
+    @GetMapping(path = "/study/{roadMapId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public MyMapResponse<RoadMapStudyDetailDto> findById(@PathVariable("roadMapId") Long roadMapId) {
 
         return MyMapResponse.create()
                 .succeed()
@@ -64,31 +63,43 @@ public class UserRoadMapController {
      * todo: check - 메모를 등록할 때, 노드에 따라 연쇄적으로 등록하는 것인지 아니면 노드당 하나만 메모를 등록하도록 설정할지.
      */
     @Operation(summary = "메모 등록하기", description = "메모 정보 등록")
-    @PostMapping(path = "/study/{id}/{nodeId}/memo", produces = MediaType.APPLICATION_JSON_VALUE)
-    public MyMapResponse<Boolean> memoRegister(@PathVariable("id") Long roadMapId, @PathVariable("nodeId") Long roadMapStudyNodeId, MemoDto memoDto) {
+    @PostMapping(path = "/study/{roadMapId}/{nodeId}/memo", produces = MediaType.APPLICATION_JSON_VALUE)
+    public MyMapResponse<Boolean> memoRegister(
+            @PathVariable("roadMapId") Long roadMapId,
+            @PathVariable("nodeId") Long roadMapNodeId,
+            Authentication authentication, String memo) {
+        User currentUser = (User) authentication.getPrincipal();
 
         return MyMapResponse.create()
                 .succeed()
-                .buildWith(true);
+                .buildWith(roadMapStudyService.registerMemo(currentUser.getId(), roadMapId, roadMapNodeId, memo));
     }
 
     @Operation(summary = "메모 변경하기", description = "메모 정보 변경")
-    @PutMapping(path = "/study/{id}/{nodeId}/memo", produces = MediaType.APPLICATION_JSON_VALUE)
-    public MyMapResponse<Boolean> memoUpdate(@PathVariable("id") Long roadMapId, @PathVariable("nodeId") Long roadMapStudyNodeId, MemoDto memoDto) {
+    @PutMapping(path = "/study/{roadMapId}/{nodeId}/memo", produces = MediaType.APPLICATION_JSON_VALUE)
+    public MyMapResponse<Boolean> memoUpdate(
+            @PathVariable("roadMapId") Long roadMapId,
+            @PathVariable("nodeId") Long roadMapNodeId,
+            Authentication authentication, String memo) {
+        User currentUser = (User) authentication.getPrincipal();
 
         return MyMapResponse.create()
                 .succeed()
-                .buildWith(true);
+                .buildWith(roadMapStudyService.updateMemo(currentUser.getId(), roadMapId, roadMapNodeId, memo));
     }
 
-
-    @Operation(summary = "학습중인 로드맵 상태변경", description = "")
-    @PutMapping(path = "/study/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public MyMapResponse<Boolean> update(@PathVariable("id") Long roadMapId, RoadMapStudyStatusDto statusDto) {
+    // check - node에 대한 학습이 완료되면 각 노드에 대한 상태를 완료로 처리
+    @Operation(summary = "학습중인 로드맵 상태변경", description = "개별 노드의 상태처리")
+    @PutMapping(path = "/study/{roadMapId}/{nodeId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public MyMapResponse<Boolean> update(
+            @PathVariable("roadMapId") Long roadMapId,
+            @PathVariable("nodeId") Long roadMapNodeId,
+            Authentication authentication) {
+        User currentUser = (User) authentication.getPrincipal();
 
         return MyMapResponse.create()
                 .succeed()
-                .buildWith(true);
+                .buildWith(roadMapStudyService.turnNodeComplete(currentUser.getId(), roadMapId, roadMapNodeId));
     }
 
 

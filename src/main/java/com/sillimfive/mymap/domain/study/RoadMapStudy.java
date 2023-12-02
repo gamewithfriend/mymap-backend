@@ -53,7 +53,7 @@ public class RoadMapStudy {
     public void addStudyNode(List<RoadMapNode> nodes) {
         List<RoadMapStudyNode> studyNodes =
                 nodes.stream()
-                        .map(node -> new RoadMapStudyNode(node.getId(), this, ""))
+                        .map(node -> new RoadMapStudyNode(node.getId(), this))
                         .collect(Collectors.toList());
 
         this.roadMapStudyNodes.addAll(studyNodes);
