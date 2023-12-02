@@ -22,12 +22,13 @@ public class RoadMapStudyNode implements Persistable<Long> {
     @JoinColumn(name = "roadmap_study_id")
     private RoadMapStudy roadMapStudy;
 
-    private String memo;
+    @Embedded
+    private Memo memo;
 
     @Transient
     private boolean isCreated;
 
-    //todo: check true or false | percentage presentation
+    // cf: temporally complete or not
     private boolean completeFlag;
 
     @Override
@@ -35,10 +36,17 @@ public class RoadMapStudyNode implements Persistable<Long> {
         return isCreated;
     }
 
-    public RoadMapStudyNode(Long roadMapNodeId, RoadMapStudy roadMapStudy, String memo) {
+    public RoadMapStudyNode(Long roadMapNodeId, RoadMapStudy roadMapStudy) {
         this.id = roadMapNodeId;
         this.roadMapStudy = roadMapStudy;
-        this.memo = memo;
         this.isCreated = true;
+    }
+
+    public void addMemo(Memo memo) {
+        this.memo = memo;
+    }
+
+    public void turnComplete() {
+        this.completeFlag = true;
     }
 }
