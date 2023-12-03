@@ -56,6 +56,12 @@ public class RoadMapStudyService {
         RoadMapStudyNode roadMapStudyNode = getValidRoadMapStudyNode(currentUserId, roadMapId, roadMapNodeId);
         roadMapStudyNode.turnComplete();
 
+        RoadMapStudy roadMapStudy = roadMapStudyRepository.findByRoadMapId(roadMapId).get();
+
+        // 모든 노드가 complete 된 경우 endDate 설정
+        if (roadMapStudy.getRoadMapStudyNodes().stream().filter(node -> !node.isCompleteFlag()).count() == 0)
+            roadMapStudy.finished();
+
         return true;
     }
 

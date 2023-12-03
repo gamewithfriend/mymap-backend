@@ -8,7 +8,6 @@ import com.sillimfive.mymap.service.RoadMapStudyService;
 import com.sillimfive.mymap.web.dto.MyMapResponse;
 import com.sillimfive.mymap.web.dto.roadmap.*;
 import com.sillimfive.mymap.web.dto.study.RoadMapStudyDetailDto;
-import com.sillimfive.mymap.web.dto.study.RoadMapStudyStatusDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -61,6 +60,7 @@ public class UserRoadMapController {
 
     /*
      * todo: check - 메모를 등록할 때, 노드에 따라 연쇄적으로 등록하는 것인지 아니면 노드당 하나만 메모를 등록하도록 설정할지.
+     * todo: check - 로드맵의 각 노드에만 메모를 달 수 있게처리
      */
     @Operation(summary = "메모 등록하기", description = "메모 정보 등록")
     @PostMapping(path = "/study/{roadMapId}/{nodeId}/memo", produces = MediaType.APPLICATION_JSON_VALUE)
