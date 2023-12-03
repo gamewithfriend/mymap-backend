@@ -58,4 +58,8 @@ public class RoadMapStudy {
 
         this.roadMapStudyNodes.addAll(studyNodes);
     }
+
+    public void finished() {
+        this.endDate = LocalDateTime.now();
+    }
 }

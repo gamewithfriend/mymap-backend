@@ -1,12 +1,8 @@
 package com.sillimfive.mymap.repository;
 
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sillimfive.mymap.domain.QImage;
-import com.sillimfive.mymap.domain.roadmap.QRoadMap;
 import com.sillimfive.mymap.domain.roadmap.RoadMap;
-import com.sillimfive.mymap.domain.users.QUser;
 import com.sillimfive.mymap.web.dto.roadmap.RoadMapResponseDto;
 import com.sillimfive.mymap.web.dto.roadmap.RoadMapSearch;
 import lombok.RequiredArgsConstructor;
